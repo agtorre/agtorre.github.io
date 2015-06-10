@@ -1,10 +1,10 @@
-    <!DOCTYPE html>
+  <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-    <title> Development &middot; Aaron Torres </title>
+    <title> Off the Rails with Rails &middot; Aaron Torres </title>
     
     <link rel="stylesheet" type="text/css" href="http://www.aaron-torres.com//css/uno.min.css" />
     <link rel="stylesheet" type="text/css" href="http://www.aaron-torres.com//css/lightGallery.css" />
@@ -12,19 +12,19 @@
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
     <link rel="shortcut icon" href="/favicon.ico">
     
-    <link href="http://www.aaron-torres.com/tags/development/index.xml" rel="alternate" type="application/rss+xml" title="Aaron Torres" />
+    <link href="" rel="alternate" type="application/rss+xml" title="Aaron Torres" />
     
     <script src="http://www.aaron-torres.com//js/jquery.min.js"></script>
     <script src="http://www.aaron-torres.com//js/main.min.js">
     </script>
 </head>
 
-    <body>
-        <span class="mobile btn-mobile-menu">
+  <body>
+    <span class="mobile btn-mobile-menu">
         <i class="fa fa-bars btn-mobile-menu__icon"></i>
         <i class="fa fa-times btn-mobile-close__icon hidden"></i>
     </span>
-<header class=" panel-cover "  style="background-image: url(/images/background-cover.jpg)" >
+<header class="panel-cover panel-cover--collapsed"  style="background-image: url(/images/background-cover.jpg)" >
     <div class="panel-main">
         <div class="panel-main__inner panel-inverted">
             <div class="panel-main__content"> 
@@ -65,33 +65,43 @@
     </div>
 </header>
 
-        <div class="content-wrapper">
-            <div class="content-wrapper__inner">
-                
-                <h2>2015</h2>
-                <ul id="list">
-                    
-                    <li>
-                        <a href="http://www.aaron-torres.com/post/off-the-rails-with-rails/">Off the Rails with Rails </a>
-                        <div class="meta">Tue, Jun 9, 2015</div>
-                    </li>
-                    
-                </ul>
-                
-                <h2>2014</h2>
-                <ul id="list">
-                    
-                    <li>
-                        <a href="http://www.aaron-torres.com/post/moving-forward/">Looking and Moving Forward </a>
-                        <div class="meta">Sun, Jan 5, 2014</div>
-                    </li>
-                    
-                </ul>
-                
-            </div>
+    <div class="content-wrapper">
+      <div class="content-wrapper__inner">
+        <div class="post">
+          <h1>Off the Rails with Rails</h1>
+          <span class="post-date">Tue, Jun 9, 2015</span>
+          <p>&ldquo;Why don&rsquo;t you just use strong parameters?&rdquo; said the guy.</p>
+
+<p>I was feeling pretty annoyed. The conversation up until this point had already been rocky. The term strong parameters could refer to some yet unknown Go concept, it could refer to a general computer science term (strongly typed parameters?), or it could refer to some other technology I&rsquo;m yet unfamiliar with. In my mind, my knowledge was being challenged. I had a hunch based on his background, that he was referring to something in Rails. I took this as a personal challenge to learn all that I can about it. Nothing is more frustrating to me in software development then finding I&rsquo;ve been operating with a big gap in my knowledge and I wanted to determine if I was missing anything else.</p>
+
+<p>Web micro services are becoming more and more common. Deploying these services in the cloud using technology like Docker allow software to scale like crazy. This is especially true for apps written in languages Go or JavaScript on Node.js. It is an odd time look back at older, more monolithic stacks like Rails or Django. An odd time maybe, but my side projects right now are all about passion in the moment.</p>
+
+<p>And, I learned some pretty cool things. Rails apps make it easy to generate CRUD and actually seem to make it a pleasure doing so. My wife assures me that normally CRUD is quite unpleasant and that I should enjoy it while it&rsquo;s in an upswing. Many times I&rsquo;ve found myself writing tons of boiler plate hooking up services in Go to deploy a simple RESTFul API. I&rsquo;ve also found that no web framework in Go fits <em>Just Right</em>, so I&rsquo;m often reinventing the wheel and gluing together components ranging from OAuth2 Server Libraries, to CSRF middleware that plug into one of the many <strong>many</strong> Go middleware implementations. Or, I find myself wondering why the two most popular Go routers fail to solve a number of simple problems. As far as I can tell, so far, Rails does all of this out of the box. Now, I&rsquo;m not prepared to migrate large swaths of Go micro services to Rails, but I&rsquo;m finding some things in Rails that I do find attractive.</p>
+
         </div>
-    </body>
-    <script type="text/javascript">
+        <aside id=comments>
+    <div><h2> Comments </h2></div>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'aaron-torres';
+    var disqus_identifier = 'http:\/\/www.aaron-torres.com\/post\/off-the-rails-with-rails\/';
+    var disqus_title = 'Off the Rails with Rails';
+    var disqus_url = 'http:\/\/www.aaron-torres.com\/post\/off-the-rails-with-rails\/';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</aside>
+
+      </div>
+    </div>
+  </body>
+  <script type="text/javascript">
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
