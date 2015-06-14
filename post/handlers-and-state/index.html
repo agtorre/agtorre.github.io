@@ -114,9 +114,10 @@ func AllTheInfo(w http.ResponseWriter, r *http.Request){
 
 func main(){
     n := negroni.New()
+    n.Use(UseAuth)
 
     mux = http.NewServeMux()
-    mux.HandleFunc(&quot;/&quot;, CheckAllTheInfo(true))
+    mux.HandleFunc(&quot;/&quot;, AllTheInfo)
 
     n.UseHandler(mux)
     n.Run(&quot;:8000&quot;)
