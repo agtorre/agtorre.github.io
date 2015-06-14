@@ -4,24 +4,18 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-    <title> Off the Rails with Rails &middot; Aaron Torres </title>
+    <title> Go Handlers and Closures &middot; Aaron Torres </title>
     
-    <link rel="stylesheet" type="text/css" href="http://www.aaron-torres.com//css/uno.min.css" />
-    <link rel="stylesheet" type="text/css" href="http://www.aaron-torres.com//css/lightGallery.css" />
-    <style>
-        a{
-            color: #b58900;
-        }
-
-    </style>
+    <link rel="stylesheet" type="text/css" href="http://www.lothsoft.com:1313//css/uno.min.css" />
+    <link rel="stylesheet" type="text/css" href="http://www.lothsoft.com:1313//css/lightGallery.css" />
     
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
     <link rel="shortcut icon" href="/favicon.ico">
     
     <link href="" rel="alternate" type="application/rss+xml" title="Aaron Torres" />
     
-    <script src="http://www.aaron-torres.com//js/jquery.min.js"></script>
-    <script src="http://www.aaron-torres.com//js/main.min.js">
+    <script src="http://www.lothsoft.com:1313//js/jquery.min.js"></script>
+    <script src="http://www.lothsoft.com:1313//js/main.min.js">
     <!-- syntax highlighting -->
     <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
     <script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
@@ -39,7 +33,7 @@
         <div class="panel-main__inner panel-inverted">
             <div class="panel-main__content"> 
                 <h1 class="panel-cover__title panel-title">
-                    <a href="http://www.aaron-torres.com/" title="link to homepage for Aaron Torres">Aaron Torres</a>
+                    <a href="http://www.lothsoft.com:1313/" title="link to homepage for Aaron Torres">Aaron Torres</a>
                 </h1>
                 <hr class="panel-cover__divider" />
                 <p class="panel-cover__description">  A collection of writing, projects, and whatever else I feel like.  </p>
@@ -78,15 +72,50 @@
     <div class="content-wrapper">
       <div class="content-wrapper__inner">
         <div class="post">
-          <h1>Off the Rails with Rails</h1>
-          <span class="post-date">Tue, Jun 9, 2015</span>
-          <p>&ldquo;Why don&rsquo;t you just use strong parameters?&rdquo; said the guy.</p>
+          <h1>Go Handlers and Closures</h1>
+          <span class="post-date">Sun, Jun 14, 2015</span>
+          <p>Today I&rsquo;d like to get a bit technical with things I&rsquo;ve been learning and working on in the Go language. Sometimes, in Go, it&rsquo;s helpful to pass state into a <a href="http://golang.org/pkg/net/http/#HandlerFunc">web handler function</a>.
+These functions have a specific signature and make it difficult to both add parameters and remain compatible with other libraries. There are many ways to accomplish this,
+including middleware with some combination of <a href="https://github.com/codegangsta/negroni">middleware</a> and <a href="http://www.gorillatoolkit.org/pkg/context">context</a> libraries.</p>
 
-<p>I was feeling pretty annoyed. The conversation up until this point had already been rocky. The term strong parameters could refer to some yet unknown Go concept, it could refer to a general computer science term (strongly typed parameters?), or it could refer to some other technology I&rsquo;m yet unfamiliar with. In my mind, my knowledge was being challenged. I had a hunch based on his background, that he was referring to something in Rails. I took this as a personal challenge to learn all that I can about it. Nothing is more frustrating to me in software development than finding I&rsquo;ve been operating with a big gap in my knowledge and I wanted to determine if I was missing anything else.</p>
+<p>Another, perhaps simpler, make use of controllers. An important caveat to my approach is that any changes to controller variables by the handler will modify the variable
+for all other handlers and modifying them otuside of initialization is not recommended. Some examples of packages that get around this by creating a controller each request include
+<a href="https://revel.github.io/">Revel</a>, <a href="https://github.com/gocraft/web">gocraft/web</a>, and this <a href="https://github.com/codegangsta/controller">controller</a> by <a href="http://codegangsta.io/">codegangsta</a>.</p>
 
-<p>Web micro services are becoming more and more common. Deploying these services in the cloud using technology like Docker allow software to scale like crazy. This is especially true for apps written in languages Go or JavaScript on Node.js. It is an odd time look back at older, more monolithic stacks like Rails or Django. An odd time maybe, but my side projects right now are all about passion in the moment.</p>
+<pre><code class="language-go">import &quot;net/http&quot;
 
-<p>And, I learned some pretty cool things. Rails apps make it easy to generate CRUD and actually seem to make it a pleasure doing so. My wife assures me that normally CRUD is quite unpleasant and that I should enjoy it while it&rsquo;s in an upswing. Many times I&rsquo;ve found myself writing tons of boiler plate hooking up services in Go to deploy a simple RESTFul API. I&rsquo;ve also found that no web framework in Go fits <em>Just Right</em>, so I&rsquo;m often reinventing the wheel and gluing together components ranging from OAuth2 Server Libraries, to CSRF middleware that plug into one of the many <strong>many</strong> Go middleware implementations. Or, I find myself wondering why the two most popular Go routers fail to solve a number of simple problems. As far as I can tell, so far, Rails does all of this out of the box. Now, I&rsquo;m not prepared to migrate large swaths of Go micro services to Rails, but I&rsquo;m finding some things in Rails that I do find attractive.</p>
+type Controller struct{
+    DoAuth bool
+}
+
+func (c *Controller) AllTheInfo(w ResponseWriter, r *Request){
+    if c.DoAuth{
+        // do something here
+    }
+}
+
+func main(){
+    c := &amp;Controller{DoAuth: true}
+    http.HandleFunc(&quot;/&quot;, c.AllTheInfo)
+    http.ListenAndServe(&quot;:8000&quot;, nil)
+}
+</code></pre>
+
+<p>safe. So this tactic should really be used for config-like changes. Another approach that has served me very well is the use of closures.</p>
+
+<pre><code class="language-go">func CheckAllTheInfo(DoAuth bool) func(w ResponseWriter, r *Request){
+    return func(w ResponseWriter, r *Request){
+        if DoAuth{
+            // do something here
+        }
+    }
+}
+
+func main(){
+    http.HandleFunc(&quot;/&quot;, CheckAllTheInfo(true))
+    http.ListenAndServe(&quot;:8000&quot;, nil)
+}
+</code></pre>
 
         </div>
         <aside id=comments>
@@ -94,9 +123,9 @@
 <div id="disqus_thread"></div>
 <script type="text/javascript">
     var disqus_shortname = 'aaron-torres';
-    var disqus_identifier = 'http:\/\/www.aaron-torres.com\/post\/off-the-rails-with-rails\/';
-    var disqus_title = 'Off the Rails with Rails';
-    var disqus_url = 'http:\/\/www.aaron-torres.com\/post\/off-the-rails-with-rails\/';
+    var disqus_identifier = 'http:\/\/www.lothsoft.com:1313\/post\/handlers-and-closures\/';
+    var disqus_title = 'Go Handlers and Closures';
+    var disqus_url = 'http:\/\/www.lothsoft.com:1313\/post\/handlers-and-closures\/';
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
@@ -110,7 +139,10 @@
 
       </div>
     </div>
-  </body>
+  <script>document.write('<script src="http://'
+        + (location.host || 'localhost').split(':')[0]
+		+ ':1313/livereload.js?mindelay=10"></'
+        + 'script>')</script></body>
   <script type="text/javascript">
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

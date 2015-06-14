@@ -8,6 +8,12 @@
     
     <link rel="stylesheet" type="text/css" href="http://www.aaron-torres.com//css/uno.min.css" />
     <link rel="stylesheet" type="text/css" href="http://www.aaron-torres.com//css/lightGallery.css" />
+    <style>
+        a{
+            color: #b58900;
+        }
+
+    </style>
     
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
     <link rel="shortcut icon" href="/favicon.ico">
@@ -16,6 +22,10 @@
     
     <script src="http://www.aaron-torres.com//js/jquery.min.js"></script>
     <script src="http://www.aaron-torres.com//js/main.min.js">
+    <!-- syntax highlighting -->
+    <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+    <script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
     </script>
 </head>
 
@@ -55,7 +65,7 @@
         </li>  
         
         <li class="navigation__item">
-            <a href="mailto:aaron@aaron-torres.com" title="Email aaron@aaron-torres.com"> <i class='fa fa-envelope-o'></i> <span class="label">Email</span> </a>
+            <a href="mailto:me@aaron-torres.com" title="Email me@aaron-torres.com"> <i class='fa fa-envelope-o'></i> <span class="label">Email</span> </a>
         </li>  </ul>
 </nav>
  </div>
@@ -103,5 +113,9 @@
 (function(){var j=function(a,b){return window.getComputedStyle?getComputedStyle(a).getPropertyValue(b):a.currentStyle[b]};var k=function(a,b,c){if(a.addEventListener)a.addEventListener(b,c,false);else a.attachEvent('on'+b,c)};var l=function(a,b){for(key in b)if(b.hasOwnProperty(key))a[key]=b[key];return a};window.fitText=function(d,e,f){var g=l({'minFontSize':-1/0,'maxFontSize':1/0},f);var h=function(a){var b=e||1;var c=function(){a.style.fontSize=Math.max(Math.min(a.clientWidth/(b*10),parseFloat(g.maxFontSize)),parseFloat(g.minFontSize))+'px'};c();k(window,'resize',c)};if(d.length)for(var i=0;i<d.length;i++)h(d[i]);else h(d);return d}})();
 fitText(document.getElementById('title'), 1)
 </script>
+
+<link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/solarized_dark.min.css">
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 
 </html>

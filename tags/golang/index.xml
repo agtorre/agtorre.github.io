@@ -6,8 +6,102 @@
     <description>Recent content in Golang on Aaron Torres</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 09 Jun 2015 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 14 Jun 2015 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://www.aaron-torres.com/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Go Handlers and State</title>
+      <link>http://www.aaron-torres.com/post/handlers-and-state/</link>
+      <pubDate>Sun, 14 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.aaron-torres.com/post/handlers-and-state/</guid>
+      <description>&lt;p&gt;Today I&amp;rsquo;d like to get a bit technical about things I&amp;rsquo;ve been learning and working on in the Go language&lt;/p&gt;
+
+&lt;p&gt;Sometimes it&amp;rsquo;s helpful to pass additional state into a &lt;a href=&#34;http://golang.org/pkg/net/http/#HandlerFunc&#34;&gt;web handler function&lt;/a&gt;. For all the examples below, lets assume you want to have a toggle
+for authentication that is checked once within the handler function. These functions have a specific signature and make it difficult to both add parameters and remain compatible with other libraries.
+There are many ways to accomplish this, including middleware with some combination of &lt;a href=&#34;https://github.com/codegangsta/negroni&#34;&gt;middleware&lt;/a&gt; and &lt;a href=&#34;http://www.gorillatoolkit.org/pkg/context&#34;&gt;context&lt;/a&gt; libraries.
+This has the advantage of allowing each request to modify the stored context value without interfering with other handlers. It&amp;rsquo;s a bit complicated if you happen to forget to turn on the middleware
+and requires a diligent programmer to not hit panics inside the handler by implementing functions like DoAuth below.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type key int
+
+const AuthKey key = 0
+
+func UseAuth(w http.ResponseWriter, r *http.Request, next http.HandlerFunc){
+    context.Set(r, AuthKey, true)
+    next(w, r)
+    context.Clear(r)
+}
+
+func DoAuth(r *http.Request)(bool, error){
+    // in case middle-ware isn&#39;t turned on...
+    if doAuth, ok := context.Get(r, AuthKey); ok{
+        return doAuth, nil
+    }
+    return false, errors.New(&amp;quot;middleware off&amp;quot;)
+}
+
+func AllTheInfo(w http.ResponseWriter, r *http.Request){
+    if doAuth, err := DoAuth(r); err == nil &amp;amp;&amp;amp; doAuth{
+        // do something here
+    }
+}
+
+func main(){
+    n := negroni.New()
+
+    mux = http.NewServeMux()
+    mux.HandleFunc(&amp;quot;/&amp;quot;, CheckAllTheInfo(true))
+
+    n.UseHandler(mux)
+    n.Run(&amp;quot;:8000&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A simpler, but potentially less flexible approach is to use controllers. It&amp;rsquo;s important to remember and keep in mind that
+controller variables should not be modified inside the handler as it will modify the controller for all other handlers that make use of it. For example, it may seem tempting to set some state
+based on the current request, but this is not recommended out of the box. Some examples of packages that get around this limitation by creating a controller each request include &lt;a href=&#34;https://github.com/gocraft/web&#34;&gt;gocraft/web&lt;/a&gt;
+and this &lt;a href=&#34;https://github.com/codegangsta/controller&#34;&gt;controller&lt;/a&gt; library.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type Controller struct{
+    DoAuth bool
+}
+
+func (c *Controller) AllTheInfo(w http.ResponseWriter, r *http.Request){
+    if c.DoAuth{
+        // do something here
+    }
+}
+
+func main(){
+    c := &amp;amp;Controller{DoAuth: true}
+    http.HandleFunc(&amp;quot;/&amp;quot;, c.AllTheInfo)
+    http.ListenAndServe(&amp;quot;:8000&amp;quot;, nil)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Finally, a very light-weight approach I like to make use of is closures. Closures allow the state to be modified from within the handler and are also granular enough that you can tweak them for every route
+without initializing additional controllers or wrapping every route with middleware incurring context look-up and reflection overhead.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func CheckAllTheInfo(DoAuth bool) func(w ResponseWriter, r *Request){
+    return func(w ResponseWriter, r *Request){
+        if DoAuth{
+            // do something here
+        }
+    }
+}
+
+func main(){
+    http.HandleFunc(&amp;quot;/&amp;quot;, CheckAllTheInfo(true))
+    http.ListenAndServe(&amp;quot;:8000&amp;quot;, nil)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Overall, there&amp;rsquo;s a lot of ways to accomplish injecting state for web handler functions in Go. There are a number of other middleware packages besides negroni and there are even context objects
+build into the &lt;a href=&#34;https://godoc.org/golang.org/x/net/context&#34;&gt;standard library&lt;/a&gt; now. I use combinations of all of these as one doesn&amp;rsquo;t scratch all the itches I have. You can also combine these, for example
+you could attach a context object to a controller that is safe to modify or wrap a controller method in a closure.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Off the Rails with Rails</title>

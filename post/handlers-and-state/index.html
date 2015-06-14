@@ -4,7 +4,7 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-    <title> Off the Rails with Rails &middot; Aaron Torres </title>
+    <title> Go Handlers and State &middot; Aaron Torres </title>
     
     <link rel="stylesheet" type="text/css" href="http://www.aaron-torres.com//css/uno.min.css" />
     <link rel="stylesheet" type="text/css" href="http://www.aaron-torres.com//css/lightGallery.css" />
@@ -78,15 +78,93 @@
     <div class="content-wrapper">
       <div class="content-wrapper__inner">
         <div class="post">
-          <h1>Off the Rails with Rails</h1>
-          <span class="post-date">Tue, Jun 9, 2015</span>
-          <p>&ldquo;Why don&rsquo;t you just use strong parameters?&rdquo; said the guy.</p>
+          <h1>Go Handlers and State</h1>
+          <span class="post-date">Sun, Jun 14, 2015</span>
+          <p>Today I&rsquo;d like to get a bit technical about things I&rsquo;ve been learning and working on in the Go language</p>
 
-<p>I was feeling pretty annoyed. The conversation up until this point had already been rocky. The term strong parameters could refer to some yet unknown Go concept, it could refer to a general computer science term (strongly typed parameters?), or it could refer to some other technology I&rsquo;m yet unfamiliar with. In my mind, my knowledge was being challenged. I had a hunch based on his background, that he was referring to something in Rails. I took this as a personal challenge to learn all that I can about it. Nothing is more frustrating to me in software development than finding I&rsquo;ve been operating with a big gap in my knowledge and I wanted to determine if I was missing anything else.</p>
+<p>Sometimes it&rsquo;s helpful to pass additional state into a <a href="http://golang.org/pkg/net/http/#HandlerFunc">web handler function</a>. For all the examples below, lets assume you want to have a toggle
+for authentication that is checked once within the handler function. These functions have a specific signature and make it difficult to both add parameters and remain compatible with other libraries.
+There are many ways to accomplish this, including middleware with some combination of <a href="https://github.com/codegangsta/negroni">middleware</a> and <a href="http://www.gorillatoolkit.org/pkg/context">context</a> libraries.
+This has the advantage of allowing each request to modify the stored context value without interfering with other handlers. It&rsquo;s a bit complicated if you happen to forget to turn on the middleware
+and requires a diligent programmer to not hit panics inside the handler by implementing functions like DoAuth below.</p>
 
-<p>Web micro services are becoming more and more common. Deploying these services in the cloud using technology like Docker allow software to scale like crazy. This is especially true for apps written in languages Go or JavaScript on Node.js. It is an odd time look back at older, more monolithic stacks like Rails or Django. An odd time maybe, but my side projects right now are all about passion in the moment.</p>
+<pre><code class="language-go">type key int
 
-<p>And, I learned some pretty cool things. Rails apps make it easy to generate CRUD and actually seem to make it a pleasure doing so. My wife assures me that normally CRUD is quite unpleasant and that I should enjoy it while it&rsquo;s in an upswing. Many times I&rsquo;ve found myself writing tons of boiler plate hooking up services in Go to deploy a simple RESTFul API. I&rsquo;ve also found that no web framework in Go fits <em>Just Right</em>, so I&rsquo;m often reinventing the wheel and gluing together components ranging from OAuth2 Server Libraries, to CSRF middleware that plug into one of the many <strong>many</strong> Go middleware implementations. Or, I find myself wondering why the two most popular Go routers fail to solve a number of simple problems. As far as I can tell, so far, Rails does all of this out of the box. Now, I&rsquo;m not prepared to migrate large swaths of Go micro services to Rails, but I&rsquo;m finding some things in Rails that I do find attractive.</p>
+const AuthKey key = 0
+
+func UseAuth(w http.ResponseWriter, r *http.Request, next http.HandlerFunc){
+    context.Set(r, AuthKey, true)
+    next(w, r)
+    context.Clear(r)
+}
+
+func DoAuth(r *http.Request)(bool, error){
+    // in case middle-ware isn't turned on...
+    if doAuth, ok := context.Get(r, AuthKey); ok{
+        return doAuth, nil
+    }
+    return false, errors.New(&quot;middleware off&quot;)
+}
+
+func AllTheInfo(w http.ResponseWriter, r *http.Request){
+    if doAuth, err := DoAuth(r); err == nil &amp;&amp; doAuth{
+        // do something here
+    }
+}
+
+func main(){
+    n := negroni.New()
+
+    mux = http.NewServeMux()
+    mux.HandleFunc(&quot;/&quot;, CheckAllTheInfo(true))
+
+    n.UseHandler(mux)
+    n.Run(&quot;:8000&quot;)
+}
+</code></pre>
+
+<p>A simpler, but potentially less flexible approach is to use controllers. It&rsquo;s important to remember and keep in mind that
+controller variables should not be modified inside the handler as it will modify the controller for all other handlers that make use of it. For example, it may seem tempting to set some state
+based on the current request, but this is not recommended out of the box. Some examples of packages that get around this limitation by creating a controller each request include <a href="https://github.com/gocraft/web">gocraft/web</a>
+and this <a href="https://github.com/codegangsta/controller">controller</a> library.</p>
+
+<pre><code class="language-go">type Controller struct{
+    DoAuth bool
+}
+
+func (c *Controller) AllTheInfo(w http.ResponseWriter, r *http.Request){
+    if c.DoAuth{
+        // do something here
+    }
+}
+
+func main(){
+    c := &amp;Controller{DoAuth: true}
+    http.HandleFunc(&quot;/&quot;, c.AllTheInfo)
+    http.ListenAndServe(&quot;:8000&quot;, nil)
+}
+</code></pre>
+
+<p>Finally, a very light-weight approach I like to make use of is closures. Closures allow the state to be modified from within the handler and are also granular enough that you can tweak them for every route
+without initializing additional controllers or wrapping every route with middleware incurring context look-up and reflection overhead.</p>
+
+<pre><code class="language-go">func CheckAllTheInfo(DoAuth bool) func(w ResponseWriter, r *Request){
+    return func(w ResponseWriter, r *Request){
+        if DoAuth{
+            // do something here
+        }
+    }
+}
+
+func main(){
+    http.HandleFunc(&quot;/&quot;, CheckAllTheInfo(true))
+    http.ListenAndServe(&quot;:8000&quot;, nil)
+}
+</code></pre>
+
+<p>Overall, there&rsquo;s a lot of ways to accomplish injecting state for web handler functions in Go. There are a number of other middleware packages besides negroni and there are even context objects
+build into the <a href="https://godoc.org/golang.org/x/net/context">standard library</a> now. I use combinations of all of these as one doesn&rsquo;t scratch all the itches I have. You can also combine these, for example
+you could attach a context object to a controller that is safe to modify or wrap a controller method in a closure.</p>
 
         </div>
         <aside id=comments>
@@ -94,9 +172,9 @@
 <div id="disqus_thread"></div>
 <script type="text/javascript">
     var disqus_shortname = 'aaron-torres';
-    var disqus_identifier = 'http:\/\/www.aaron-torres.com\/post\/off-the-rails-with-rails\/';
-    var disqus_title = 'Off the Rails with Rails';
-    var disqus_url = 'http:\/\/www.aaron-torres.com\/post\/off-the-rails-with-rails\/';
+    var disqus_identifier = 'http:\/\/www.aaron-torres.com\/post\/handlers-and-state\/';
+    var disqus_title = 'Go Handlers and State';
+    var disqus_url = 'http:\/\/www.aaron-torres.com\/post\/handlers-and-state\/';
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
