@@ -6,8 +6,200 @@
     <description>Recent content in Golang on Aaron Torres</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 14 Jun 2015 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 25 Jun 2015 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://www.aaron-torres.com/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Go Validation Tricks</title>
+      <link>http://www.aaron-torres.com/post/validation-tricks/</link>
+      <pubDate>Thu, 25 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.aaron-torres.com/post/validation-tricks/</guid>
+      <description>
+
+&lt;p&gt;As I&amp;rsquo;ve gotten more familiar with Go web programming, I&amp;rsquo;ve tried to solve the problem
+of form and payload validation a number of different ways. Coming from a Python background, I initially
+really liked the idea of using a validation method.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type Form struct{
+    Field1 string `json:&amp;quot;field1&amp;quot;`
+    Field2 int    `json:&amp;quot;field2&amp;quot;`
+}
+
+// we can pass in multiple arguments like db, or whatever else.
+// do any validation necessary using the values in Form
+func (f *Form) Validate(db *Database) error{
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;There are a few problems with this approach. The first problem is that this validate method is likely
+to return an error immediately rather than aggregate them all. The second problem is that this validation method
+is incredibly painful to mock when testing.&lt;/p&gt;
+
+&lt;h3 id=&#34;first-problem:8252aae13cd61d98f43ed96cf48eeab0&#34;&gt;First Problem&lt;/h3&gt;
+
+&lt;p&gt;Let&amp;rsquo;s take a stab at the first problem. In Go, errors are actually an &lt;a href=&#34;http://blog.golang.org/error-handling-and-go&#34;&gt;interface&lt;/a&gt;.
+One way to implement an error interface and return all errors at the same time might be this Verror approach that &lt;a href=&#34;http://husobee.github.io&#34;&gt;husobee&lt;/a&gt; and I came up with:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;import (
+    &amp;quot;fmt&amp;quot;
+    &amp;quot;strings&amp;quot;
+)
+
+func NewVerror() *Verrors {
+    return &amp;amp;Verrors{
+        Errors: make(map[string][]string),
+    }
+}
+
+// keys represent the field
+// and each field can have numerous errors
+type Verrors struct {
+    Errors map[string][]string
+}
+
+// also works with duplicate errors!
+func (e *Verrors) AddError(field, err string) {
+    if _, ok := e.Errors[field]; !ok {
+        e.Errors[field] = make([]string, 0)
+    }
+
+    for _, ele := range e.Errors[field] {
+        if ele == err {
+            return
+        }
+    }
+    e.Errors[field] = append(e.Errors[field], err)
+}
+
+// we can aggregate together functions that return verrors
+// or multiple verrors from go routines, for example
+func (e *Verrors) Merge(e2 *Verrors) {
+    for key, values := range e2.Errors {
+        for _, value := range values {
+            e.AddError(key, value)
+        }
+    }
+}
+
+// if you want to return nil instead of an empty verror
+// check if Valid return false first
+func (e *Verrors) Valid() bool{
+    return len(e.Errors) == 0
+}
+
+// satisfies the error interface
+func (e *Verrors) Error() string {
+    response := &amp;quot;&amp;quot;
+    for k, v := range e.Errors {
+        response += fmt.Sprintf(&amp;quot;%s: [%s]&amp;quot;, k, strings.Join(v, &amp;quot;,&amp;quot;))
+    }
+    return response
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Verrors are pretty flexible, you can even return them as JSON with some additional
+type checking. Keep in mind this doesn&amp;rsquo;t work too well if you&amp;rsquo;re returning XML.&lt;/p&gt;
+
+&lt;h3 id=&#34;second-problem:8252aae13cd61d98f43ed96cf48eeab0&#34;&gt;Second Problem&lt;/h3&gt;
+
+&lt;p&gt;Mocking in tests is a very large topic, and could be a blog post all on its own. In Go,
+the only way to mock a method is with an interface. There&amp;rsquo;s a
+more comprehensive example &lt;a href=&#34;http://play.golang.org/p/cWLT0aSkF2&#34;&gt;here&lt;/a&gt;, but the gist of it
+is:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type Form struct{
+    Field1 string `json:&amp;quot;field1&amp;quot;`
+    Field2 int    `json:&amp;quot;field2&amp;quot;`
+}
+
+func (f *Form) Validate(db *Database) error{
+}
+
+type FormValidater interface{
+     Validate(db *Database) error
+}
+
+// we can pass in a mock here
+// rarely this simple unfortunately
+func ShowMock(f FormValidater){
+    db := getDatabase()
+    f.Validate(db)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you&amp;rsquo;re unable to wrap your methods in an interface, for example when
+the method and its struct are both in the same scope, mocking these methods
+is pretty much impossible.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func Handler(w http.ResponseWriter, r *http.Request){
+    db := getDatabase()
+    c := getFromJSON(r)
+    c.Validate(db)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Another option is using a function that takes the form object as the first argument instead of a method.
+With functions you can use: &lt;a href=&#34;http://play.golang.org/p/oLF1XnRX3C&#34;&gt;patch/restore&lt;/a&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type Form struct{
+    Field1 string `json:&amp;quot;field1&amp;quot;`
+    Field2 int    `json:&amp;quot;field2&amp;quot;`
+}
+
+var ValidateForm = func(f *Form, db *Database) error{
+}
+
+func ShowMock(){
+    defer Patch(&amp;amp;ValidateForm, func(f *Form, db *Database) error{
+        return nil
+    }).Restore()
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This has the unfortunate side-effect of modifying the global ValidateForm definition and
+is not thread-safe. For tests this is typically not an issue, but if you want to avoid patch/restore,
+another strategy is to make use of struct closure variables:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type Form struct {
+    Field1 string `json:&amp;quot;field1&amp;quot;`
+    Field2 int    `json:&amp;quot;field2&amp;quot;`
+}
+
+func ValidateForm(f *Form, db *Database) error {
+}
+
+func NewFormProcessor() *FormProcessor {
+    return &amp;amp;FormProcessor{
+        ValidateForm: ValidateForm,
+    }
+}
+
+// ValidateForm is a closure
+type FormProcessor struct {
+    ValidateForm func(f *Form, db *Database) error
+}
+
+// an example of mocking ValidateForm that is
+// thread-safe
+func (f FormProcessor) ShowMock() {
+    f.ValidateForm = func(f *Form, db *Database) error {
+        return nil
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The controllers discussed &lt;a href=&#34;http://www.aaron-torres.com/post/handlers-and-state/&#34;&gt;here&lt;/a&gt; can make great use of an embedded
+FormProcessor (which can hold any number of validation functions). An example can be found
+&lt;a href=&#34;http://play.golang.org/p/dkGVfVG86u&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;conclusion:8252aae13cd61d98f43ed96cf48eeab0&#34;&gt;Conclusion&lt;/h3&gt;
+
+&lt;p&gt;I&amp;rsquo;ve touched on a few strategies for tackling the validation problem, and I also highly
+encourage you to check out this &lt;a href=&#34;https://github.com/asaskevich/govalidator&#34;&gt;validation library&lt;/a&gt; to
+supplement this information. I&amp;rsquo;ll probably discuss this more in the future as I inevitably revisit this myself again.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Go Handlers and State</title>

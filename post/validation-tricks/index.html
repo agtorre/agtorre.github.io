@@ -1,0 +1,307 @@
+  <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title> Go Validation Tricks &middot; Aaron Torres </title>
+    
+    <link rel="stylesheet" type="text/css" href="http://www.aaron-torres.com//css/uno.min.css" />
+    <link rel="stylesheet" type="text/css" href="http://www.aaron-torres.com//css/lightGallery.css" />
+    <style>
+        a{
+            color: #b58900;
+        }
+
+    </style>
+    
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Aaron Torres" />
+    
+    <script src="http://www.aaron-torres.com//js/jquery.min.js"></script>
+    <script src="http://www.aaron-torres.com//js/main.min.js">
+    <!-- syntax highlighting -->
+    <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+    <script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    </script>
+</head>
+
+  <body>
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-bars btn-mobile-menu__icon"></i>
+        <i class="fa fa-times btn-mobile-close__icon hidden"></i>
+    </span>
+<header class="panel-cover panel-cover--collapsed"  style="background-image: url(/images/background-cover.jpg)" >
+    <div class="panel-main">
+        <div class="panel-main__inner panel-inverted">
+            <div class="panel-main__content"> 
+                <h1 class="panel-cover__title panel-title">
+                    <a href="http://www.aaron-torres.com/" title="link to homepage for Aaron Torres">Aaron Torres</a>
+                </h1>
+                <hr class="panel-cover__divider" />
+                <p class="panel-cover__description">  A collection of writing, projects, and whatever else I feel like.  </p>
+                <hr class="panel-cover__divider panel-cover__divider--secondary" />
+                <div class="navigation-wrapper">
+                    <nav class="cover-navigation cover-navigation--primary">
+                        <ul class="navigation">
+                            <li class="navigation__item"><a href="/#blog" title="link to Aaron Torres blog" class="blog-button">Blog</a> </li>
+                            </br>  </ul>
+                    </nav> <nav class="cover-navigation navigation--social">
+    <ul class="navigation"> 
+        
+        <li class="navigation__item">
+            <a href="http://twitter.com/aarontorres" title="@aarontorres on Twitter"> <i class='fa fa-tt'></i> <span class="label">Twitter</span> </a>
+        </li>   
+        
+        <li class="navigation__item">
+            <a href="https://github.com/agtorre" title="agtorre on github"> <i class='fa fa-github'></i> <span class="label">Github</span> </a>
+        </li>  </br>  
+        
+        <li class="navigation__item">
+            <a href="http://no.linkedin.com/in/torresaaron/en" title="Linkedin"> <i class='fa fa-ll'></i> <span class="label">Linkedin</span> </a>
+        </li>  
+        
+        <li class="navigation__item">
+            <a href="mailto:me@aaron-torres.com" title="Email me@aaron-torres.com"> <i class='fa fa-envelope-o'></i> <span class="label">Email</span> </a>
+        </li>  </ul>
+</nav>
+ </div>
+            </div>
+        </div>
+        <div class="panel-cover--overlay"></div>
+    </div>
+</header>
+
+    <div class="content-wrapper">
+      <div class="content-wrapper__inner">
+        <div class="post">
+          <h1>Go Validation Tricks</h1>
+          <span class="post-date">Thu, Jun 25, 2015</span>
+          
+
+<p>As I&rsquo;ve gotten more familiar with Go web programming, I&rsquo;ve tried to solve the problem
+of form and payload validation a number of different ways. Coming from a Python background, I initially
+really liked the idea of using a validation method.</p>
+
+<pre><code class="language-go">type Form struct{
+    Field1 string `json:&quot;field1&quot;`
+    Field2 int    `json:&quot;field2&quot;`
+}
+
+// we can pass in multiple arguments like db, or whatever else.
+// do any validation necessary using the values in Form
+func (f *Form) Validate(db *Database) error{
+}
+</code></pre>
+
+<p>There are a few problems with this approach. The first problem is that this validate method is likely
+to return an error immediately rather than aggregate them all. The second problem is that this validation method
+is incredibly painful to mock when testing.</p>
+
+<h3 id="first-problem:8252aae13cd61d98f43ed96cf48eeab0">First Problem</h3>
+
+<p>Let&rsquo;s take a stab at the first problem. In Go, errors are actually an <a href="http://blog.golang.org/error-handling-and-go">interface</a>.
+One way to implement an error interface and return all errors at the same time might be this Verror approach that <a href="http://husobee.github.io">husobee</a> and I came up with:</p>
+
+<pre><code class="language-go">import (
+    &quot;fmt&quot;
+    &quot;strings&quot;
+)
+
+func NewVerror() *Verrors {
+    return &amp;Verrors{
+        Errors: make(map[string][]string),
+    }
+}
+
+// keys represent the field
+// and each field can have numerous errors
+type Verrors struct {
+    Errors map[string][]string
+}
+
+// also works with duplicate errors!
+func (e *Verrors) AddError(field, err string) {
+    if _, ok := e.Errors[field]; !ok {
+        e.Errors[field] = make([]string, 0)
+    }
+
+    for _, ele := range e.Errors[field] {
+        if ele == err {
+            return
+        }
+    }
+    e.Errors[field] = append(e.Errors[field], err)
+}
+
+// we can aggregate together functions that return verrors
+// or multiple verrors from go routines, for example
+func (e *Verrors) Merge(e2 *Verrors) {
+    for key, values := range e2.Errors {
+        for _, value := range values {
+            e.AddError(key, value)
+        }
+    }
+}
+
+// if you want to return nil instead of an empty verror
+// check if Valid return false first
+func (e *Verrors) Valid() bool{
+    return len(e.Errors) == 0
+}
+
+// satisfies the error interface
+func (e *Verrors) Error() string {
+    response := &quot;&quot;
+    for k, v := range e.Errors {
+        response += fmt.Sprintf(&quot;%s: [%s]&quot;, k, strings.Join(v, &quot;,&quot;))
+    }
+    return response
+}
+</code></pre>
+
+<p>Verrors are pretty flexible, you can even return them as JSON with some additional
+type checking. Keep in mind this doesn&rsquo;t work too well if you&rsquo;re returning XML.</p>
+
+<h3 id="second-problem:8252aae13cd61d98f43ed96cf48eeab0">Second Problem</h3>
+
+<p>Mocking in tests is a very large topic, and could be a blog post all on its own. In Go,
+the only way to mock a method is with an interface. There&rsquo;s a
+more comprehensive example <a href="http://play.golang.org/p/cWLT0aSkF2">here</a>, but the gist of it
+is:</p>
+
+<pre><code class="language-go">type Form struct{
+    Field1 string `json:&quot;field1&quot;`
+    Field2 int    `json:&quot;field2&quot;`
+}
+
+func (f *Form) Validate(db *Database) error{
+}
+
+type FormValidater interface{
+     Validate(db *Database) error
+}
+
+// we can pass in a mock here
+// rarely this simple unfortunately
+func ShowMock(f FormValidater){
+    db := getDatabase()
+    f.Validate(db)
+}
+</code></pre>
+
+<p>If you&rsquo;re unable to wrap your methods in an interface, for example when
+the method and its struct are both in the same scope, mocking these methods
+is pretty much impossible.</p>
+
+<pre><code class="language-go">func Handler(w http.ResponseWriter, r *http.Request){
+    db := getDatabase()
+    c := getFromJSON(r)
+    c.Validate(db)
+}
+</code></pre>
+
+<p>Another option is using a function that takes the form object as the first argument instead of a method.
+With functions you can use: <a href="http://play.golang.org/p/oLF1XnRX3C">patch/restore</a>.</p>
+
+<pre><code class="language-go">type Form struct{
+    Field1 string `json:&quot;field1&quot;`
+    Field2 int    `json:&quot;field2&quot;`
+}
+
+var ValidateForm = func(f *Form, db *Database) error{
+}
+
+func ShowMock(){
+    defer Patch(&amp;ValidateForm, func(f *Form, db *Database) error{
+        return nil
+    }).Restore()
+}
+</code></pre>
+
+<p>This has the unfortunate side-effect of modifying the global ValidateForm definition and
+is not thread-safe. For tests this is typically not an issue, but if you want to avoid patch/restore,
+another strategy is to make use of struct closure variables:</p>
+
+<pre><code class="language-go">type Form struct {
+    Field1 string `json:&quot;field1&quot;`
+    Field2 int    `json:&quot;field2&quot;`
+}
+
+func ValidateForm(f *Form, db *Database) error {
+}
+
+func NewFormProcessor() *FormProcessor {
+    return &amp;FormProcessor{
+        ValidateForm: ValidateForm,
+    }
+}
+
+// ValidateForm is a closure
+type FormProcessor struct {
+    ValidateForm func(f *Form, db *Database) error
+}
+
+// an example of mocking ValidateForm that is
+// thread-safe
+func (f FormProcessor) ShowMock() {
+    f.ValidateForm = func(f *Form, db *Database) error {
+        return nil
+    }
+}
+</code></pre>
+
+<p>The controllers discussed <a href="/post/handlers-and-state/">here</a> can make great use of an embedded
+FormProcessor (which can hold any number of validation functions). An example can be found
+<a href="http://play.golang.org/p/dkGVfVG86u">here</a>.</p>
+
+<h3 id="conclusion:8252aae13cd61d98f43ed96cf48eeab0">Conclusion</h3>
+
+<p>I&rsquo;ve touched on a few strategies for tackling the validation problem, and I also highly
+encourage you to check out this <a href="https://github.com/asaskevich/govalidator">validation library</a> to
+supplement this information. I&rsquo;ll probably discuss this more in the future as I inevitably revisit this myself again.</p>
+
+        </div>
+        <aside id=comments>
+    <div><h2> Comments </h2></div>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'aaron-torres';
+    var disqus_identifier = 'http:\/\/www.aaron-torres.com\/post\/validation-tricks\/';
+    var disqus_title = 'Go Validation Tricks';
+    var disqus_url = 'http:\/\/www.aaron-torres.com\/post\/validation-tricks\/';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</aside>
+
+      </div>
+    </div>
+  </body>
+  <script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-8973677-3', 'aaron-torres.com');
+  ga('send', 'pageview');
+
+(function(){var j=function(a,b){return window.getComputedStyle?getComputedStyle(a).getPropertyValue(b):a.currentStyle[b]};var k=function(a,b,c){if(a.addEventListener)a.addEventListener(b,c,false);else a.attachEvent('on'+b,c)};var l=function(a,b){for(key in b)if(b.hasOwnProperty(key))a[key]=b[key];return a};window.fitText=function(d,e,f){var g=l({'minFontSize':-1/0,'maxFontSize':1/0},f);var h=function(a){var b=e||1;var c=function(){a.style.fontSize=Math.max(Math.min(a.clientWidth/(b*10),parseFloat(g.maxFontSize)),parseFloat(g.minFontSize))+'px'};c();k(window,'resize',c)};if(d.length)for(var i=0;i<d.length;i++)h(d[i]);else h(d);return d}})();
+fitText(document.getElementById('title'), 1)
+</script>
+
+<link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/solarized_dark.min.css">
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+</html>
