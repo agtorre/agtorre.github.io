@@ -6,29 +6,8 @@
     <description>Recent content in Posts on Aaron Torres</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 01 Oct 2015 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 25 Jun 2015 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://www.aaron-torres.com/post/index.xml" rel="self" type="application/rss+xml" />
-    
-    <item>
-      <title>Google Survey Oops</title>
-      <link>http://www.aaron-torres.com/post/google-survey-oops/</link>
-      <pubDate>Thu, 01 Oct 2015 00:00:00 +0000</pubDate>
-      
-      <guid>http://www.aaron-torres.com/post/google-survey-oops/</guid>
-      <description>&lt;p&gt;Yesterday, a Google employee made a silly mistake that revealed some unexpected insights.&lt;/p&gt;
-
-&lt;p&gt;It started when I received a strange email asking for feedback on one of their coaching program that I had participated in long ago while interviewing. This email was unusual because it skipped my filter, but appeared to be spam at first glance. The title was: “{Action Requested} Google Candidate Coaching Survey”. Even more strangely, the sender used CC for the mailing list revealing 481 email addresses!&lt;/p&gt;
-
-&lt;p&gt;Soon after receiving it, people began using reply-all. There was plenty of light-hearted discussion as well including spam complaints and recruiting attempts.  After several replies, a trend appeared &amp;ndash; the majority of individuals had ethnic-sounding names. This observation was brought up in the thread and soon others pointed out you could look at G+ photos from Gmail and that people largely appeared to be ethnic. In total, I received 42 replies and everyone seemed to acknowledge this observation, or at least no one dismissed it.&lt;/p&gt;
-
-&lt;p&gt;The whole thing was ridiculous and I feel bad for the Google employee who sent it. The lingering questions in my head are:&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;Does Google keep a mailing list of ethnic people?&lt;/li&gt;
-&lt;li&gt;Were these people targeted for this coaching program?&lt;/li&gt;
-&lt;/ol&gt;
-</description>
-    </item>
     
     <item>
       <title>Go Validation Tricks</title>
@@ -314,22 +293,6 @@ func main(){
 &lt;p&gt;Overall, there&amp;rsquo;s a lot of ways to accomplish injecting state for web handler functions in Go. There are a number of other middleware packages besides negroni and there are even context objects
 build into the &lt;a href=&#34;https://godoc.org/golang.org/x/net/context&#34;&gt;standard library&lt;/a&gt; now. I use combinations of all of these as one doesn&amp;rsquo;t scratch all the itches I have. You can also combine these, for example
 you could attach a context object to a controller that is safe to modify or wrap a controller method in a closure.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Off the Rails with Rails</title>
-      <link>http://www.aaron-torres.com/post/off-the-rails-with-rails/</link>
-      <pubDate>Tue, 09 Jun 2015 00:00:00 +0000</pubDate>
-      
-      <guid>http://www.aaron-torres.com/post/off-the-rails-with-rails/</guid>
-      <description>&lt;p&gt;&amp;ldquo;Why don&amp;rsquo;t you just use strong parameters?&amp;rdquo; said the guy.&lt;/p&gt;
-
-&lt;p&gt;I was feeling pretty annoyed. The conversation up until this point had already been rocky. The term strong parameters could refer to some yet unknown Go concept, it could refer to a general computer science term (strongly typed parameters?), or it could refer to some other technology I&amp;rsquo;m yet unfamiliar with. In my mind, my knowledge was being challenged. I had a hunch based on his background, that he was referring to something in Rails. I took this as a personal challenge to learn all that I can about it. Nothing is more frustrating to me in software development than finding I&amp;rsquo;ve been operating with a big gap in my knowledge and I wanted to determine if I was missing anything else.&lt;/p&gt;
-
-&lt;p&gt;Web micro services are becoming more and more common. Deploying these services in the cloud using technology like Docker allow software to scale like crazy. This is especially true for apps written in languages Go or JavaScript on Node.js. It is an odd time look back at older, more monolithic stacks like Rails or Django. An odd time maybe, but my side projects right now are all about passion in the moment.&lt;/p&gt;
-
-&lt;p&gt;And, I learned some pretty cool things. Rails apps make it easy to generate CRUD and actually seem to make it a pleasure doing so. My wife assures me that normally CRUD is quite unpleasant and that I should enjoy it while it&amp;rsquo;s in an upswing. Many times I&amp;rsquo;ve found myself writing tons of boiler plate hooking up services in Go to deploy a simple RESTFul API. I&amp;rsquo;ve also found that no web framework in Go fits &lt;em&gt;Just Right&lt;/em&gt;, so I&amp;rsquo;m often reinventing the wheel and gluing together components ranging from OAuth2 Server Libraries, to CSRF middleware that plug into one of the many &lt;strong&gt;many&lt;/strong&gt; Go middleware implementations. Or, I find myself wondering why the two most popular Go routers fail to solve a number of simple problems. As far as I can tell, so far, Rails does all of this out of the box. Now, I&amp;rsquo;m not prepared to migrate large swaths of Go micro services to Rails, but I&amp;rsquo;m finding some things in Rails that I do find attractive.&lt;/p&gt;
 </description>
     </item>
     

@@ -6,24 +6,8 @@
     <description>Recent content in Profiling on Aaron Torres</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 09 Jun 2015 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 05 Jan 2014 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://www.aaron-torres.com/tags/profiling/index.xml" rel="self" type="application/rss+xml" />
-    
-    <item>
-      <title>Off the Rails with Rails</title>
-      <link>http://www.aaron-torres.com/post/off-the-rails-with-rails/</link>
-      <pubDate>Tue, 09 Jun 2015 00:00:00 +0000</pubDate>
-      
-      <guid>http://www.aaron-torres.com/post/off-the-rails-with-rails/</guid>
-      <description>&lt;p&gt;&amp;ldquo;Why don&amp;rsquo;t you just use strong parameters?&amp;rdquo; said the guy.&lt;/p&gt;
-
-&lt;p&gt;I was feeling pretty annoyed. The conversation up until this point had already been rocky. The term strong parameters could refer to some yet unknown Go concept, it could refer to a general computer science term (strongly typed parameters?), or it could refer to some other technology I&amp;rsquo;m yet unfamiliar with. In my mind, my knowledge was being challenged. I had a hunch based on his background, that he was referring to something in Rails. I took this as a personal challenge to learn all that I can about it. Nothing is more frustrating to me in software development than finding I&amp;rsquo;ve been operating with a big gap in my knowledge and I wanted to determine if I was missing anything else.&lt;/p&gt;
-
-&lt;p&gt;Web micro services are becoming more and more common. Deploying these services in the cloud using technology like Docker allow software to scale like crazy. This is especially true for apps written in languages Go or JavaScript on Node.js. It is an odd time look back at older, more monolithic stacks like Rails or Django. An odd time maybe, but my side projects right now are all about passion in the moment.&lt;/p&gt;
-
-&lt;p&gt;And, I learned some pretty cool things. Rails apps make it easy to generate CRUD and actually seem to make it a pleasure doing so. My wife assures me that normally CRUD is quite unpleasant and that I should enjoy it while it&amp;rsquo;s in an upswing. Many times I&amp;rsquo;ve found myself writing tons of boiler plate hooking up services in Go to deploy a simple RESTFul API. I&amp;rsquo;ve also found that no web framework in Go fits &lt;em&gt;Just Right&lt;/em&gt;, so I&amp;rsquo;m often reinventing the wheel and gluing together components ranging from OAuth2 Server Libraries, to CSRF middleware that plug into one of the many &lt;strong&gt;many&lt;/strong&gt; Go middleware implementations. Or, I find myself wondering why the two most popular Go routers fail to solve a number of simple problems. As far as I can tell, so far, Rails does all of this out of the box. Now, I&amp;rsquo;m not prepared to migrate large swaths of Go micro services to Rails, but I&amp;rsquo;m finding some things in Rails that I do find attractive.&lt;/p&gt;
-</description>
-    </item>
     
     <item>
       <title>Looking and Moving Forward</title>
