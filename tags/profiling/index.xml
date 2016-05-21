@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Profiling on Aaron Torres</title>
+      <title>Profiling on Aaron Torres </title>
+      <generator uri="https://gohugo.io">Hugo</generator>
     <link>http://www.aaron-torres.com/tags/profiling/</link>
-    <description>Recent content in Profiling on Aaron Torres</description>
-    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 05 Jan 2014 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://www.aaron-torres.com/tags/profiling/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <updated>Sun, 05 Jan 2014 00:00:00 UTC</updated>
     
     <item>
       <title>Looking and Moving Forward</title>
       <link>http://www.aaron-torres.com/post/moving-forward/</link>
-      <pubDate>Sun, 05 Jan 2014 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 05 Jan 2014 00:00:00 UTC</pubDate>
       
       <guid>http://www.aaron-torres.com/post/moving-forward/</guid>
       <description>
@@ -20,11 +20,11 @@
 &lt;p&gt;I wanted to start this year off with a new blog built on top of Github Pages
 and Jekyll, and a look back on what went well (and didn&amp;rsquo;t) in 2013.&lt;/p&gt;
 
-&lt;h3 id=&#34;the-job:cec6d66b02f6bce7b2edf2e0a5db0bb8&#34;&gt;The Job&lt;/h3&gt;
+&lt;h3 id=&#34;the-job&#34;&gt;The Job&lt;/h3&gt;
 
 &lt;p&gt;The single biggest event of this year was completely uprooting our lives, packing up, and leaving the state. We did this with a car full of a few clothes, a box of important documents, a laptop, 1 cat, 1 dog, 1 baby, and 2 adult humans. We had basically lived in New Mexico our entire lives and we left behind two houses and everyone we knew in order to pursue new opportunities in Seattle. This decision was made with less than a month of notice, but not without enormous scrutiny and worry.&lt;/p&gt;
 
-&lt;h3 id=&#34;fears:cec6d66b02f6bce7b2edf2e0a5db0bb8&#34;&gt;Fears&lt;/h3&gt;
+&lt;h3 id=&#34;fears&#34;&gt;Fears&lt;/h3&gt;
 
 &lt;p&gt;The best way I can describe this entire ordeal is terrifying. Imagine
 completely leaving any comfort zone that you&amp;rsquo;ve created in order to pursue
@@ -41,7 +41,7 @@ anywhere. However these were the gambles:&lt;/p&gt;
 &lt;li&gt;Financing this whole ordeal&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;how-d-that-work-out:cec6d66b02f6bce7b2edf2e0a5db0bb8&#34;&gt;How&amp;rsquo;d that work out?&lt;/h3&gt;
+&lt;h3 id=&#34;how-d-that-work-out&#34;&gt;How&amp;rsquo;d that work out?&lt;/h3&gt;
 
 &lt;p&gt;The good news is, we had to get lucky 2-3 times in order to pull it off , and we nailed all of em. We got an offer on the house the same day we listed it,
 and sold it shortly after. We also had a successful yard sale where we
@@ -55,7 +55,7 @@ each of these individual events, but that&amp;rsquo;s best left for another time
 you&amp;rsquo;re ever interested, come have a beer or coffee with me and we can chat
 about it.&lt;/p&gt;
 
-&lt;h3 id=&#34;2014:cec6d66b02f6bce7b2edf2e0a5db0bb8&#34;&gt;2014&lt;/h3&gt;
+&lt;h3 id=&#34;2014&#34;&gt;2014&lt;/h3&gt;
 
 &lt;p&gt;Without further ado, lets talk about what my plans are for this year. The theme
 shared by these is that I&amp;rsquo;d like to try and build a personal brand. Now that
@@ -76,7 +76,7 @@ complete with blog, code, resume, etc.&lt;/li&gt;
 &lt;p&gt;This is a LOT to do in a short amount of time, however, I&amp;rsquo;m already off to a
 running start.&lt;/p&gt;
 
-&lt;h3 id=&#34;what-s-been-done:cec6d66b02f6bce7b2edf2e0a5db0bb8&#34;&gt;What&amp;rsquo;s been done.&lt;/h3&gt;
+&lt;h3 id=&#34;what-s-been-done&#34;&gt;What&amp;rsquo;s been done.&lt;/h3&gt;
 
 &lt;p&gt;I&amp;rsquo;ve hit the ground running, lets get to it:&lt;/p&gt;
 
@@ -89,7 +89,7 @@ redoing my resume and will have everything up soon&lt;/li&gt;
 (&lt;a href=&#34;http://robfig.github.io/revel/&#34;&gt;http://robfig.github.io/revel/&lt;/a&gt;)&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;if-you-d-like-to-read-more:cec6d66b02f6bce7b2edf2e0a5db0bb8&#34;&gt;If You&amp;rsquo;d Like to Read More.&lt;/h3&gt;
+&lt;h3 id=&#34;if-you-d-like-to-read-more&#34;&gt;If You&amp;rsquo;d Like to Read More.&lt;/h3&gt;
 
 &lt;p&gt;Drop me a line! Star my projects on Github. I hope that I can slowly make
 myself into a content provider where the things I share are interesting and
