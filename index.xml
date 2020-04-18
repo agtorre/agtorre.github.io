@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title> on Aaron Torres </title>
+      <title>Aaron Torres on Aaron Torres </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://www.aaron-torres.com/</link>
+    <link>https://www.aaron-torres.com/</link>
     <language>en-us</language>
     
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>Go API Versioning with Gorilla Mux</title>
-      <link>http://www.aaron-torres.com/post/api-versioning-gorilla-mux/</link>
+      <link>https://www.aaron-torres.com/post/api-versioning-gorilla-mux/</link>
       <pubDate>Tue, 17 May 2016 00:00:00 UTC</pubDate>
       
-      <guid>http://www.aaron-torres.com/post/api-versioning-gorilla-mux/</guid>
+      <guid>https://www.aaron-torres.com/post/api-versioning-gorilla-mux/</guid>
       <description>
 
 &lt;h3 id=&#34;code-based-versioning&#34;&gt;Code-Based Versioning&lt;/h3&gt;
@@ -89,15 +89,13 @@ func main() {
     
     <item>
       <title>Go Validation Tricks</title>
-      <link>http://www.aaron-torres.com/post/validation-tricks/</link>
+      <link>https://www.aaron-torres.com/post/validation-tricks/</link>
       <pubDate>Thu, 25 Jun 2015 00:00:00 UTC</pubDate>
       
-      <guid>http://www.aaron-torres.com/post/validation-tricks/</guid>
+      <guid>https://www.aaron-torres.com/post/validation-tricks/</guid>
       <description>
 
-&lt;p&gt;As I&amp;rsquo;ve gotten more familiar with Go web programming, I&amp;rsquo;ve tried to solve the problem
-of form and payload validation a number of different ways. Coming from a Python background, I initially
-really liked the idea of using a validation method.&lt;/p&gt;
+&lt;p&gt;As I&amp;rsquo;ve gotten more familiar with Go web programming, I&amp;rsquo;ve tried to solve the problem of form and payload validation a number of different ways. Coming from a Python background, I initially really liked the idea of using a validation method.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type Form struct{
     Field1 string `json:&amp;quot;field1&amp;quot;`
@@ -110,14 +108,11 @@ func (f *Form) Validate(db *Database) error{
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;There are a few problems with this approach. The first problem is that this validate method is likely
-to return an error immediately rather than aggregate them all. The second problem is that this validation method
-is incredibly painful to mock when testing.&lt;/p&gt;
+&lt;p&gt;There are a few problems with this approach. The first problem is that this validate method is likely to return an error immediately rather than aggregate them all. The second problem is that this validation method is incredibly painful to mock when testing.&lt;/p&gt;
 
 &lt;h3 id=&#34;first-problem&#34;&gt;First Problem&lt;/h3&gt;
 
-&lt;p&gt;Let&amp;rsquo;s take a stab at the first problem. In Go, errors are actually an &lt;a href=&#34;http://blog.golang.org/error-handling-and-go&#34;&gt;interface&lt;/a&gt;.
-One way to implement an error interface and return all errors at the same time might be this Verror approach that &lt;a href=&#34;http://husobee.github.io&#34;&gt;husobee&lt;/a&gt; and I came up with:&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s take a stab at the first problem. In Go, errors are actually an &lt;a href=&#34;http://blog.golang.org/error-handling-and-go&#34;&gt;interface&lt;/a&gt;. One way to implement an error interface and return all errors at the same time might be this Verror approach that &lt;a href=&#34;http://husobee.github.io&#34;&gt;husobee&lt;/a&gt; and I came up with:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;import (
     &amp;quot;fmt&amp;quot;
@@ -176,15 +171,11 @@ func (e *Verrors) Error() string {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Verrors are pretty flexible, you can even return them as JSON with some additional
-type checking. Keep in mind this doesn&amp;rsquo;t work too well if you&amp;rsquo;re returning XML.&lt;/p&gt;
+&lt;p&gt;Verrors are pretty flexible, you can even return them as JSON with some additional type checking. Keep in mind this doesn&amp;rsquo;t work too well if you&amp;rsquo;re returning XML.&lt;/p&gt;
 
 &lt;h3 id=&#34;second-problem&#34;&gt;Second Problem&lt;/h3&gt;
 
-&lt;p&gt;Mocking in tests is a very large topic, and could be a blog post all on its own. In Go,
-the only way to mock a method is with an interface. There&amp;rsquo;s a
-more comprehensive example &lt;a href=&#34;http://play.golang.org/p/cWLT0aSkF2&#34;&gt;here&lt;/a&gt;, but the gist of it
-is:&lt;/p&gt;
+&lt;p&gt;Mocking in tests is a very large topic, and could be a blog post all on its own. In Go, the only way to mock a method is with an interface. There&amp;rsquo;s a more comprehensive example &lt;a href=&#34;http://play.golang.org/p/cWLT0aSkF2&#34;&gt;here&lt;/a&gt;, but the gist of it is:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type Form struct{
     Field1 string `json:&amp;quot;field1&amp;quot;`
@@ -206,9 +197,7 @@ func ShowMock(f FormValidater){
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;If you&amp;rsquo;re unable to wrap your methods in an interface, for example when
-the method and its struct are both in the same scope, mocking these methods
-is pretty much impossible.&lt;/p&gt;
+&lt;p&gt;If you&amp;rsquo;re unable to wrap your methods in an interface, for example when the method and its struct are both in the same scope, mocking these methods is pretty much impossible.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func Handler(w http.ResponseWriter, r *http.Request){
     db := getDatabase()
@@ -217,8 +206,7 @@ is pretty much impossible.&lt;/p&gt;
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Another option is using a function that takes the form object as the first argument instead of a method.
-With functions you can use: &lt;a href=&#34;http://play.golang.org/p/oLF1XnRX3C&#34;&gt;patch/restore&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Another option is using a function that takes the form object as the first argument instead of a method. With functions you can use: &lt;a href=&#34;http://play.golang.org/p/oLF1XnRX3C&#34;&gt;patch/restore&lt;/a&gt;.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type Form struct{
     Field1 string `json:&amp;quot;field1&amp;quot;`
@@ -235,9 +223,7 @@ func ShowMock(){
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;This has the unfortunate side-effect of modifying the global ValidateForm definition and
-is not thread-safe. For tests this is typically not an issue, but if you want to avoid patch/restore,
-another strategy is to make use of struct closure variables:&lt;/p&gt;
+&lt;p&gt;This has the unfortunate side-effect of modifying the global ValidateForm definition and is not thread-safe. For tests this is typically not an issue, but if you want to avoid patch/restore, another strategy is to make use of struct closure variables:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type Form struct {
     Field1 string `json:&amp;quot;field1&amp;quot;`
@@ -267,31 +253,23 @@ func (f FormProcessor) ShowMock() {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;The controllers discussed &lt;a href=&#34;http://www.aaron-torres.com/post/handlers-and-state/&#34;&gt;here&lt;/a&gt; can make great use of an embedded
-FormProcessor (which can hold any number of validation functions). An example can be found
-&lt;a href=&#34;http://play.golang.org/p/dkGVfVG86u&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The controllers discussed &lt;a href=&#34;https://www.aaron-torres.com/post/handlers-and-state/&#34;&gt;here&lt;/a&gt; can make great use of an embedded FormProcessor (which can hold any number of validation functions). An example can be found &lt;a href=&#34;http://play.golang.org/p/dkGVfVG86u&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h3 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h3&gt;
 
-&lt;p&gt;I&amp;rsquo;ve touched on a few strategies for tackling the validation problem, and I also highly
-encourage you to check out this &lt;a href=&#34;https://github.com/asaskevich/govalidator&#34;&gt;validation library&lt;/a&gt; to
-supplement this information. I&amp;rsquo;ll probably discuss this more in the future as I inevitably revisit this myself again.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;ve touched on a few strategies for tackling the validation problem, and I also highly encourage you to check out this &lt;a href=&#34;https://github.com/asaskevich/govalidator&#34;&gt;validation library&lt;/a&gt; to supplement this information. I&amp;rsquo;ll probably discuss this more in the future as I inevitably revisit this myself again.&lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>Go Handlers and State</title>
-      <link>http://www.aaron-torres.com/post/handlers-and-state/</link>
+      <link>https://www.aaron-torres.com/post/handlers-and-state/</link>
       <pubDate>Sun, 14 Jun 2015 00:00:00 UTC</pubDate>
       
-      <guid>http://www.aaron-torres.com/post/handlers-and-state/</guid>
+      <guid>https://www.aaron-torres.com/post/handlers-and-state/</guid>
       <description>&lt;p&gt;Today I&amp;rsquo;d like to get a bit technical about things I&amp;rsquo;ve been learning and working on in the Go language&lt;/p&gt;
 
-&lt;p&gt;Sometimes it&amp;rsquo;s helpful to pass additional state into a &lt;a href=&#34;http://golang.org/pkg/net/http/#HandlerFunc&#34;&gt;web handler function&lt;/a&gt;. For all the examples below, lets assume you want to have a toggle
-for authentication that is checked once within the handler function. These functions have a specific signature and make it difficult to both add parameters and remain compatible with other libraries.
-There are many ways to accomplish this, including middleware with some combination of &lt;a href=&#34;https://github.com/codegangsta/negroni&#34;&gt;middleware&lt;/a&gt; and &lt;a href=&#34;http://www.gorillatoolkit.org/pkg/context&#34;&gt;context&lt;/a&gt; libraries.
-This has the advantage of allowing each request to modify the stored context value without interfering with other handlers. It&amp;rsquo;s a bit complicated if you happen to forget to turn on the middleware
-and requires a diligent programmer to not hit panics inside the handler by implementing functions like DoAuth below.&lt;/p&gt;
+&lt;p&gt;Sometimes it&amp;rsquo;s helpful to pass additional state into a &lt;a href=&#34;http://golang.org/pkg/net/http/#HandlerFunc&#34;&gt;web handler function&lt;/a&gt;. For all the examples below, lets assume you want to have a toggle for authentication that is checked once within the handler function. These functions have a specific signature and make it difficult to both add parameters and remain compatible with other libraries. There are many ways to accomplish this, including middleware with some combination of &lt;a href=&#34;https://github.com/codegangsta/negroni&#34;&gt;middleware&lt;/a&gt; and &lt;a href=&#34;http://www.gorillatoolkit.org/pkg/context&#34;&gt;context&lt;/a&gt; libraries. This has the advantage of allowing each request to modify the stored context value without interfering with other handlers. It&amp;rsquo;s a bit complicated if you happen to forget to turn on the middleware and requires a diligent programmer to not hit panics inside the handler by implementing functions like DoAuth below.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type key int
 
@@ -329,10 +307,7 @@ func main(){
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;A simpler, but potentially less flexible approach is to use controllers. It&amp;rsquo;s important to remember and keep in mind that
-controller variables should not be modified inside the handler as it will modify the controller for all other handlers that make use of it. For example, it may seem tempting to set some state
-based on the current request, but this is not recommended out of the box. Some examples of packages that get around this limitation by creating a controller each request include &lt;a href=&#34;https://github.com/gocraft/web&#34;&gt;gocraft/web&lt;/a&gt;
-and this &lt;a href=&#34;https://github.com/codegangsta/controller&#34;&gt;controller&lt;/a&gt; library.&lt;/p&gt;
+&lt;p&gt;A simpler, but potentially less flexible approach is to use controllers. It&amp;rsquo;s important to remember and keep in mind that controller variables should not be modified inside the handler as it will modify the controller for all other handlers that make use of it. For example, it may seem tempting to set some state based on the current request, but this is not recommended out of the box. Some examples of packages that get around this limitation by creating a controller each request include &lt;a href=&#34;https://github.com/gocraft/web&#34;&gt;gocraft/web&lt;/a&gt; and this &lt;a href=&#34;https://github.com/codegangsta/controller&#34;&gt;controller&lt;/a&gt; library.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type Controller struct{
     DoAuth bool
@@ -351,8 +326,7 @@ func main(){
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Finally, a very light-weight approach I like to make use of is closures. Closures allow the state to be modified from within the handler and are also granular enough that you can tweak them for every route
-without initializing additional controllers or wrapping every route with middleware incurring context look-up and reflection overhead.&lt;/p&gt;
+&lt;p&gt;Finally, a very light-weight approach I like to make use of is closures. Closures allow the state to be modified from within the handler and are also granular enough that you can tweak them for every route without initializing additional controllers or wrapping every route with middleware incurring context look-up and reflection overhead.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func CheckAllTheInfo(DoAuth bool) func(w ResponseWriter, r *Request){
     return func(w ResponseWriter, r *Request){
@@ -368,18 +342,16 @@ func main(){
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Overall, there&amp;rsquo;s a lot of ways to accomplish injecting state for web handler functions in Go. There are a number of other middleware packages besides negroni and there are even context objects
-build into the &lt;a href=&#34;https://godoc.org/golang.org/x/net/context&#34;&gt;standard library&lt;/a&gt; now. I use combinations of all of these as one doesn&amp;rsquo;t scratch all the itches I have. You can also combine these, for example
-you could attach a context object to a controller that is safe to modify or wrap a controller method in a closure.&lt;/p&gt;
+&lt;p&gt;Overall, there&amp;rsquo;s a lot of ways to accomplish injecting state for web handler functions in Go. There are a number of other middleware packages besides negroni and there are even context objects build into the &lt;a href=&#34;https://godoc.org/golang.org/x/net/context&#34;&gt;standard library&lt;/a&gt; now. I use combinations of all of these as one doesn&amp;rsquo;t scratch all the itches I have. You can also combine these, for example you could attach a context object to a controller that is safe to modify or wrap a controller method in a closure.&lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>Looking and Moving Forward</title>
-      <link>http://www.aaron-torres.com/post/moving-forward/</link>
+      <link>https://www.aaron-torres.com/post/moving-forward/</link>
       <pubDate>Sun, 05 Jan 2014 00:00:00 UTC</pubDate>
       
-      <guid>http://www.aaron-torres.com/post/moving-forward/</guid>
+      <guid>https://www.aaron-torres.com/post/moving-forward/</guid>
       <description>
 
 &lt;p&gt;I wanted to start this year off with a new blog built on top of Github Pages
@@ -391,11 +363,7 @@ and Jekyll, and a look back on what went well (and didn&amp;rsquo;t) in 2013.&lt
 
 &lt;h3 id=&#34;fears&#34;&gt;Fears&lt;/h3&gt;
 
-&lt;p&gt;The best way I can describe this entire ordeal is terrifying. Imagine
-completely leaving any comfort zone that you&amp;rsquo;ve created in order to pursue
-something nearly completely unknown. The next way I&amp;rsquo;d describe it is
-liberating. There&amp;rsquo;s something incredible about being able to pickup and move
-anywhere. However these were the gambles:&lt;/p&gt;
+&lt;p&gt;The best way I can describe this entire ordeal is terrifying. Imagine completely leaving any comfort zone that you&amp;rsquo;ve created in order to pursue something nearly completely unknown. The next way I&amp;rsquo;d describe it is liberating. There&amp;rsquo;s something incredible about being able to pickup and move anywhere. However these were the gambles:&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Leaving a job I was very good at and all the security that came with it&lt;/li&gt;
@@ -408,24 +376,13 @@ anywhere. However these were the gambles:&lt;/p&gt;
 
 &lt;h3 id=&#34;how-d-that-work-out&#34;&gt;How&amp;rsquo;d that work out?&lt;/h3&gt;
 
-&lt;p&gt;The good news is, we had to get lucky 2-3 times in order to pull it off , and we nailed all of em. We got an offer on the house the same day we listed it,
-and sold it shortly after. We also had a successful yard sale where we
-sold most of what we owned. We made the drive across the country in 3 days, and
-we&amp;rsquo;ve settled in here so far! Our finances have stabilized, and
-we&amp;rsquo;re already seeing the benefits of living in the Pacific Northwest.&lt;/p&gt;
+&lt;p&gt;The good news is, we had to get lucky 2-3 times in order to pull it off , and we nailed all of em. We got an offer on the house the same day we listed it, and sold it shortly after. We also had a successful yard sale where we sold most of what we owned. We made the drive across the country in 3 days, and we&amp;rsquo;ve settled in here so far! Our finances have stabilized, and we&amp;rsquo;re already seeing the benefits of living in the Pacific Northwest.&lt;/p&gt;
 
-&lt;p&gt;I really wanted to write a post about this during that frantic period, but that
-would have made it even worse at the time. There&amp;rsquo;s so much more detail about
-each of these individual events, but that&amp;rsquo;s best left for another time. If
-you&amp;rsquo;re ever interested, come have a beer or coffee with me and we can chat
-about it.&lt;/p&gt;
+&lt;p&gt;I really wanted to write a post about this during that frantic period, but that would have made it even worse at the time. There&amp;rsquo;s so much more detail about each of these individual events, but that&amp;rsquo;s best left for another time. If you&amp;rsquo;re ever interested, come have a beer or coffee with me and we can chat about it.&lt;/p&gt;
 
 &lt;h3 id=&#34;2014&#34;&gt;2014&lt;/h3&gt;
 
-&lt;p&gt;Without further ado, lets talk about what my plans are for this year. The theme
-shared by these is that I&amp;rsquo;d like to try and build a personal brand. Now that
-I&amp;rsquo;m less rooted, it&amp;rsquo;s important that I publicize and adapt wherever possible.
-Having said that here&amp;rsquo;s the plan:&lt;/p&gt;
+&lt;p&gt;Without further ado, lets talk about what my plans are for this year. The theme shared by these is that I&amp;rsquo;d like to try and build a personal brand. Now that I&amp;rsquo;m less rooted, it&amp;rsquo;s important that I publicize and adapt wherever possible. Having said that here&amp;rsquo;s the plan:&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;I want to publish multiple open source projects.&lt;/li&gt;
@@ -438,8 +395,7 @@ complete with blog, code, resume, etc.&lt;/li&gt;
 &lt;li&gt;I want to work on a web application for my own personal business&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;This is a LOT to do in a short amount of time, however, I&amp;rsquo;m already off to a
-running start.&lt;/p&gt;
+&lt;p&gt;This is a LOT to do in a short amount of time, however, I&amp;rsquo;m already off to a running start.&lt;/p&gt;
 
 &lt;h3 id=&#34;what-s-been-done&#34;&gt;What&amp;rsquo;s been done.&lt;/h3&gt;
 
@@ -456,10 +412,7 @@ redoing my resume and will have everything up soon&lt;/li&gt;
 
 &lt;h3 id=&#34;if-you-d-like-to-read-more&#34;&gt;If You&amp;rsquo;d Like to Read More.&lt;/h3&gt;
 
-&lt;p&gt;Drop me a line! Star my projects on Github. I hope that I can slowly make
-myself into a content provider where the things I share are interesting and
-helpful. I appreciate you take the time to read this far, and I hope that I hold
-your interest.&lt;/p&gt;
+&lt;p&gt;Drop me a line! Star my projects on Github. I hope that I can slowly make myself into a content provider where the things I share are interesting and helpful. I appreciate you take the time to read this far, and I hope that I hold your interest.&lt;/p&gt;
 </description>
     </item>
     

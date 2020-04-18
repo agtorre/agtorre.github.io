@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
     <title> Go Handlers and State &middot; Aaron Torres </title>
     
-    <link rel="stylesheet" type="text/css" href="http://www.aaron-torres.com//css/uno.min.css" />
-    <link rel="stylesheet" type="text/css" href="http://www.aaron-torres.com//css/lightGallery.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.aaron-torres.com/css/uno.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.aaron-torres.com/css/lightGallery.css" />
     <style>
         a{
             color: #b58900;
@@ -20,8 +20,8 @@
     
     <link href="" rel="alternate" type="application/rss+xml" title="Aaron Torres" />
     
-    <script src="http://www.aaron-torres.com//js/jquery.min.js"></script>
-    <script src="http://www.aaron-torres.com//js/main.min.js"></script>
+    <script src="https://www.aaron-torres.com/js/jquery.min.js"></script>
+    <script src="https://www.aaron-torres.com/js/main.min.js"></script>
     
     <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
     <script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
@@ -42,7 +42,7 @@
         <div class="panel-main__inner panel-inverted">
             <div class="panel-main__content"> 
                 <h1 class="panel-cover__title panel-title">
-                    <a href="http://www.aaron-torres.com//"  title="link to homepage for Aaron Torres">Aaron Torres</a>
+                    <a href="https://www.aaron-torres.com/"  title="link to homepage for Aaron Torres">Aaron Torres</a>
                 </h1>
                 <hr class="panel-cover__divider" />
                 <p class="panel-cover__description">  A collection of writing, projects, and whatever else I feel like.  </p>
@@ -50,7 +50,7 @@
                 <div class="navigation-wrapper">
                     <nav class="cover-navigation cover-navigation--primary">
                         <ul class="navigation">
-                            <li class="navigation__item"><a href="http://www.aaron-torres.com/#blog" title="link to Aaron Torres blog" class="blog-button">Blog</a> </li></br>
+                            <li class="navigation__item"><a href="https://www.aaron-torres.com#blog" title="link to Aaron Torres blog" class="blog-button">Blog</a> </li></br>
                             
                             
                        </ul>
@@ -66,7 +66,7 @@
         </li>  </br>  
         
         <li class="navigation__item">
-            <a href="http://no.linkedin.com/in/torresaaron/en" title="Linkedin"> <i class='fa fa-linkedin'></i> <span class="label">Linkedin</span> </a>
+            <a href="https://www.linkedin.com/in/torresaaron" title="Linkedin"> <i class='fa fa-linkedin'></i> <span class="label">Linkedin</span> </a>
         </li>  
         
         <li class="navigation__item">
@@ -94,7 +94,7 @@
             <div class="panel-main__inner panel-inverted">
                 <div class="panel-main__content"> 
                     <h1 class="panel-cover__title panel-title">
-                        <a href="http://www.aaron-torres.com//"  title="link to homepage for Aaron Torres">Aaron Torres</a>
+                        <a href="https://www.aaron-torres.com/"  title="link to homepage for Aaron Torres">Aaron Torres</a>
                     </h1>
                     <hr class="panel-cover__divider" />
                     <p class="panel-cover__description">  A collection of writing, projects, and whatever else I feel like.  </p>
@@ -102,7 +102,7 @@
                     <div class="navigation-wrapper">
                         <nav class="cover-navigation cover-navigation--primary">
                             <ul class="navigation">
-                                <li class="navigation__item"><a href="http://www.aaron-torres.com//#blog" title="link to Aaron Torres blog" class="blog-button">Blog</a> </li></br>
+                                <li class="navigation__item"><a href="https://www.aaron-torres.com/#blog" title="link to Aaron Torres blog" class="blog-button">Blog</a> </li></br>
                                 
                                 
                            </ul>
@@ -118,7 +118,7 @@
         </li>  </br>  
         
         <li class="navigation__item">
-            <a href="http://no.linkedin.com/in/torresaaron/en" title="Linkedin"> <i class='fa fa-linkedin'></i> <span class="label">Linkedin</span> </a>
+            <a href="https://www.linkedin.com/in/torresaaron" title="Linkedin"> <i class='fa fa-linkedin'></i> <span class="label">Linkedin</span> </a>
         </li>  
         
         <li class="navigation__item">
@@ -140,11 +140,7 @@
           <span class="post-date">Sun, Jun 14, 2015</span>
           <p>Today I&rsquo;d like to get a bit technical about things I&rsquo;ve been learning and working on in the Go language</p>
 
-<p>Sometimes it&rsquo;s helpful to pass additional state into a <a href="http://golang.org/pkg/net/http/#HandlerFunc">web handler function</a>. For all the examples below, lets assume you want to have a toggle
-for authentication that is checked once within the handler function. These functions have a specific signature and make it difficult to both add parameters and remain compatible with other libraries.
-There are many ways to accomplish this, including middleware with some combination of <a href="https://github.com/codegangsta/negroni">middleware</a> and <a href="http://www.gorillatoolkit.org/pkg/context">context</a> libraries.
-This has the advantage of allowing each request to modify the stored context value without interfering with other handlers. It&rsquo;s a bit complicated if you happen to forget to turn on the middleware
-and requires a diligent programmer to not hit panics inside the handler by implementing functions like DoAuth below.</p>
+<p>Sometimes it&rsquo;s helpful to pass additional state into a <a href="http://golang.org/pkg/net/http/#HandlerFunc">web handler function</a>. For all the examples below, lets assume you want to have a toggle for authentication that is checked once within the handler function. These functions have a specific signature and make it difficult to both add parameters and remain compatible with other libraries. There are many ways to accomplish this, including middleware with some combination of <a href="https://github.com/codegangsta/negroni">middleware</a> and <a href="http://www.gorillatoolkit.org/pkg/context">context</a> libraries. This has the advantage of allowing each request to modify the stored context value without interfering with other handlers. It&rsquo;s a bit complicated if you happen to forget to turn on the middleware and requires a diligent programmer to not hit panics inside the handler by implementing functions like DoAuth below.</p>
 
 <pre><code class="language-go">type key int
 
@@ -182,10 +178,7 @@ func main(){
 }
 </code></pre>
 
-<p>A simpler, but potentially less flexible approach is to use controllers. It&rsquo;s important to remember and keep in mind that
-controller variables should not be modified inside the handler as it will modify the controller for all other handlers that make use of it. For example, it may seem tempting to set some state
-based on the current request, but this is not recommended out of the box. Some examples of packages that get around this limitation by creating a controller each request include <a href="https://github.com/gocraft/web">gocraft/web</a>
-and this <a href="https://github.com/codegangsta/controller">controller</a> library.</p>
+<p>A simpler, but potentially less flexible approach is to use controllers. It&rsquo;s important to remember and keep in mind that controller variables should not be modified inside the handler as it will modify the controller for all other handlers that make use of it. For example, it may seem tempting to set some state based on the current request, but this is not recommended out of the box. Some examples of packages that get around this limitation by creating a controller each request include <a href="https://github.com/gocraft/web">gocraft/web</a> and this <a href="https://github.com/codegangsta/controller">controller</a> library.</p>
 
 <pre><code class="language-go">type Controller struct{
     DoAuth bool
@@ -204,8 +197,7 @@ func main(){
 }
 </code></pre>
 
-<p>Finally, a very light-weight approach I like to make use of is closures. Closures allow the state to be modified from within the handler and are also granular enough that you can tweak them for every route
-without initializing additional controllers or wrapping every route with middleware incurring context look-up and reflection overhead.</p>
+<p>Finally, a very light-weight approach I like to make use of is closures. Closures allow the state to be modified from within the handler and are also granular enough that you can tweak them for every route without initializing additional controllers or wrapping every route with middleware incurring context look-up and reflection overhead.</p>
 
 <pre><code class="language-go">func CheckAllTheInfo(DoAuth bool) func(w ResponseWriter, r *Request){
     return func(w ResponseWriter, r *Request){
@@ -221,42 +213,25 @@ func main(){
 }
 </code></pre>
 
-<p>Overall, there&rsquo;s a lot of ways to accomplish injecting state for web handler functions in Go. There are a number of other middleware packages besides negroni and there are even context objects
-build into the <a href="https://godoc.org/golang.org/x/net/context">standard library</a> now. I use combinations of all of these as one doesn&rsquo;t scratch all the itches I have. You can also combine these, for example
-you could attach a context object to a controller that is safe to modify or wrap a controller method in a closure.</p>
+<p>Overall, there&rsquo;s a lot of ways to accomplish injecting state for web handler functions in Go. There are a number of other middleware packages besides negroni and there are even context objects build into the <a href="https://godoc.org/golang.org/x/net/context">standard library</a> now. I use combinations of all of these as one doesn&rsquo;t scratch all the itches I have. You can also combine these, for example you could attach a context object to a controller that is safe to modify or wrap a controller method in a closure.</p>
 
         </div>
         <div class="sharing">
-<a href="https://twitter.com/intent/tweet?status=Go%20Handlers%20and%20State-http%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f" target="_blank" title="Follow me on Twitter" class="twitter">
+<a href="https://twitter.com/intent/tweet?status=Go%20Handlers%20and%20State-https%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f" target="_blank" title="Follow me on Twitter" class="twitter">
 <span class="fa fa-twitter-square fa-3x"></span></a>
-<a href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f" target="_blank" title="Join me on Facebook" class="facebook">
+<a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f" target="_blank" title="Join me on Facebook" class="facebook">
 <span class="fa fa-facebook-square fa-3x"></span></a>
-<a href="https://plus.google.com/share?url=http%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f" target="_blank" title="Google+" class="googleplus">
+<a href="https://plus.google.com/share?url=https%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f" target="_blank" title="Google+" class="googleplus">
 <span class="fa fa-google-plus-square fa-3x"></span></a>
-<a href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f&title=Go%20Handlers%20and%20State" target="_blank" title="LinkedIn" class="linkedin">
+<a href="http://www.linkedin.com/shareArticle?mini=true&url=https%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f&title=Go%20Handlers%20and%20State" target="_blank" title="LinkedIn" class="linkedin">
 <span class="fa fa-linkedin-square fa-3x"></span></a>
-<a href="http://www.reddit.com/submit?url=http%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f" target="_blank" title="Reddit" class="reddit"><span class="fa fa-reddit-square fa-3x"></span></a>
-<a href="http://www.stumbleupon.com/submit?url=http%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f" target="_blank" title="StumbleUpon" class="stumbleupon"><span class="fa fa-stumbleupon fa-3x">
+<a href="http://www.reddit.com/submit?url=https%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f" target="_blank" title="Reddit" class="reddit"><span class="fa fa-reddit-square fa-3x"></span></a>
+<a href="http://www.stumbleupon.com/submit?url=https%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f" target="_blank" title="StumbleUpon" class="stumbleupon"><span class="fa fa-stumbleupon fa-3x">
 </span></a>
 </div>
-        <aside id=comments>
-    <div><h2> Comments </h2></div>
-<div id="disqus_thread"></div>
-<script type="text/javascript">
-    var disqus_shortname = 'aaron-torres';
-    var disqus_identifier = 'http:\/\/www.aaron-torres.com\/post\/handlers-and-state\/';
-    var disqus_title = 'Go Handlers and State';
-    var disqus_url = 'http:\/\/www.aaron-torres.com\/post\/handlers-and-state\/';
+        
 
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-</aside>
+
 
       </div>
     </div>
