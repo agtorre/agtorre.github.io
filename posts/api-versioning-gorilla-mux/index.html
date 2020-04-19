@@ -1,0 +1,168 @@
+    <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title> Go API Versioning with Gorilla Mux &middot; Aaron&#39;s Desk Chair Adventures </title>
+    
+    <link rel="stylesheet" type="text/css" href="https://www.aaron-torres.com/css/uno.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.aaron-torres.com/css/lightGallery.css" />
+    
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Aaron&#39;s Desk Chair Adventures" />
+    
+    <script src="https://www.aaron-torres.com/js/jquery.min.js"></script>
+    <script src="https://www.aaron-torres.com/js/main.min.js">
+    </script>
+</head>
+
+    <body>
+        <div id="scriptHeader">
+    <span class="mobile btn-mobile-menu">
+            <i class="fa fa-bars btn-mobile-menu__icon"></i>
+            <i class="fa fa-times btn-mobile-close__icon hidden"> </i>
+    </span>
+    <header class="
+        
+            panel-cover panel-cover--collapsed
+        " >
+    <div class="panel-main">
+        <div class="panel-main__inner panel-inverted">
+            <div class="panel-main__content"> 
+                <h1 class="panel-cover__title panel-title">
+                    <a href="https://www.aaron-torres.com/"  title="link to homepage for Aaron&#39;s Desk Chair Adventures">Aaron&#39;s Desk Chair Adventures</a>
+                </h1>
+                <hr class="panel-cover__divider" />
+                <p class="panel-cover__description">  This site is built using <a href="http://gohugo.io">hugo</a> and the theme is built by <a href="http://fredrikloch.me">Fredrik</a> if you enjoy it, it is available at <a href="https://github.com/SenjinDarashiva/hugo-uno">github</a>  </p>
+                <hr class="panel-cover__divider panel-cover__divider--secondary" />
+                <div class="navigation-wrapper">
+                    <nav class="cover-navigation cover-navigation--primary">
+                        <ul class="navigation">
+                            <li class="navigation__item"><a href="https://www.aaron-torres.com#blog" title="link to Aaron&#39;s Desk Chair Adventures blog" class="blog-button">Blog</a> </li></br>
+                            
+                            
+                       </ul>
+                    </nav> <nav class="cover-navigation navigation--social">
+    <ul class="navigation">    </br>    </ul>
+</nav>
+ </div>
+            </div>
+        </div>
+        <div class="panel-cover--overlay"></div>
+    </div>
+</header>
+</div>
+<noscript>
+    <style>
+        #scriptHeader {display:none;}
+        .navigation-wrapper{
+            display: block;
+            top: 0;
+        }
+    </style>
+
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url()">
+        <div class="panel-main">
+            <div class="panel-main__inner panel-inverted">
+                <div class="panel-main__content"> 
+                    <h1 class="panel-cover__title panel-title">
+                        <a href="https://www.aaron-torres.com/"  title="link to homepage for Aaron&#39;s Desk Chair Adventures">Aaron&#39;s Desk Chair Adventures</a>
+                    </h1>
+                    <hr class="panel-cover__divider" />
+                    <p class="panel-cover__description">  This site is built using <a href="http://gohugo.io">hugo</a> and the theme is built by <a href="http://fredrikloch.me">Fredrik</a> if you enjoy it, it is available at <a href="https://github.com/SenjinDarashiva/hugo-uno">github</a>  </p>
+                    <hr class="panel-cover__divider panel-cover__divider--secondary" />
+                    <div class="navigation-wrapper">
+                        <nav class="cover-navigation cover-navigation--primary">
+                            <ul class="navigation">
+                                <li class="navigation__item"><a href="https://www.aaron-torres.com/#blog" title="link to Aaron&#39;s Desk Chair Adventures blog" class="blog-button">Blog</a> </li></br>
+                                
+                                
+                           </ul>
+                        </nav> <nav class="cover-navigation navigation--social">
+    <ul class="navigation">    </br>    </ul>
+</nav>
+ </div>
+                </div>
+            </div>
+            <div class="panel-cover--overlay"></div>
+        </div>
+    </header>
+</noscript>
+
+        <div class="content-wrapper">
+            <div class="content-wrapper__inner">
+                <div class="post">
+                    <h1>Go API Versioning with Gorilla Mux</h1>
+                    <span class="post-date">Tue, May 17, 2016</span>
+                    <h3 id="code-based-versioning">Code-Based Versioning</h3>
+<p>Recently I had a problem where I needed to implement API versioning in code. The versions would share the vast majority of routes/handlers and I found that I wanted to re-use the base routes and modifying them slightly between versions. I imagined using <a href="http://www.gorillatoolkit.org/pkg/mux">Gorilla mux router</a> as the base with all the routes and then creating a new router for v1, v2, etc that would &lsquo;inherit&rsquo; the base routes and only modify a few. That would maximize code-reuse as I&rsquo;d only have to modify the latest route in one place for many versions to receive the benefit.</p>
+<p>I searched around Google, Stack Overflow, and the Gorilla mux documentation about attaching a subrouter to a route and similar terms, but I struggled to find a working solution. I found a few useful posts and here&rsquo;s the result:</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+        <span class="s">&#34;fmt&#34;</span>
+        <span class="s">&#34;net/http&#34;</span>
+
+        <span class="s">&#34;github.com/gorilla/mux&#34;</span>
+<span class="p">)</span>
+
+<span class="c1">// AnotherHandlerLatest is the newest version of AnotherHandler
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">AnotherHandlerLatest</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="s">&#34;hello from AnotherHandlerLatest.&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// ExampleHandlerLatest is the newest version of ExampleHandler
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">ExampleHandlerLatest</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="s">&#34;hello from ExampleHandlerLatest.&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// ExampleHandlerV1 is a v1-compatible version of ExampleHandler
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">ExampleHandlerV1</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="s">&#34;Hello from ExampleHandlerv1.&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// AddV1Routes takes a router or subrouter and adds all the v1
+</span><span class="c1">// routes to it
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">AddV1Routes</span><span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">mux</span><span class="p">.</span><span class="nx">Router</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">r</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/example&#34;</span><span class="p">,</span> <span class="nx">ExampleHandlerV1</span><span class="p">)</span>
+        <span class="nf">AddRoutes</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// AddV2Routes takes a router or subrouter and adds all the v2
+</span><span class="c1">// routes to it, note that these should probably match
+</span><span class="c1">// AddRoutes(r *muxRouter) alternatively you can do
+</span><span class="c1">// var AddV2Routes = AddRoutes
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">AddV2Routes</span><span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">mux</span><span class="p">.</span><span class="nx">Router</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">AddRoutes</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// AddRoutes takes a router or subrouter and adds all the latest
+</span><span class="c1">// routes to it
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">AddRoutes</span><span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">mux</span><span class="p">.</span><span class="nx">Router</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">r</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/example&#34;</span><span class="p">,</span> <span class="nx">ExampleHandlerLatest</span><span class="p">)</span>
+        <span class="nx">r</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/example2&#34;</span><span class="p">,</span> <span class="nx">AnotherHandlerLatest</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">router</span> <span class="o">:=</span> <span class="nx">mux</span><span class="p">.</span><span class="nf">NewRouter</span><span class="p">()</span>
+
+        <span class="c1">// latest
+</span><span class="c1"></span>        <span class="nf">AddRoutes</span><span class="p">(</span><span class="nx">router</span><span class="p">)</span>
+
+        <span class="c1">// v1
+</span><span class="c1"></span>        <span class="nf">AddV1Routes</span><span class="p">(</span><span class="nx">router</span><span class="p">.</span><span class="nf">PathPrefix</span><span class="p">(</span><span class="s">&#34;/v1&#34;</span><span class="p">).</span><span class="nf">Subrouter</span><span class="p">())</span>
+
+        <span class="c1">// v2
+</span><span class="c1"></span>        <span class="nf">AddV2Routes</span><span class="p">(</span><span class="nx">router</span><span class="p">.</span><span class="nf">PathPrefix</span><span class="p">(</span><span class="s">&#34;/v2&#34;</span><span class="p">).</span><span class="nf">Subrouter</span><span class="p">())</span>
+<span class="p">}</span>
+</code></pre></div><p>The end result of this is that /example and /v2/example point at the same handler, but /v1/example points at a different handler. When a new version is created, I rename HandlerLatest to HandlerVn where n is the previous newest version. I add it to the AddVnRoutes, create an AddVn+1Routes and new version is made! I can easily deprecate older versions (and their associated handlers) as needed.</p>
+
+                </div>
+            </div>
+        </div>
+    </body>
+    
+</html>

@@ -1,0 +1,172 @@
+    <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title> Go Handlers and State &middot; Aaron&#39;s Desk Chair Adventures </title>
+    
+    <link rel="stylesheet" type="text/css" href="https://www.aaron-torres.com/css/uno.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.aaron-torres.com/css/lightGallery.css" />
+    
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Aaron&#39;s Desk Chair Adventures" />
+    
+    <script src="https://www.aaron-torres.com/js/jquery.min.js"></script>
+    <script src="https://www.aaron-torres.com/js/main.min.js">
+    </script>
+</head>
+
+    <body>
+        <div id="scriptHeader">
+    <span class="mobile btn-mobile-menu">
+            <i class="fa fa-bars btn-mobile-menu__icon"></i>
+            <i class="fa fa-times btn-mobile-close__icon hidden"> </i>
+    </span>
+    <header class="
+        
+            panel-cover panel-cover--collapsed
+        " >
+    <div class="panel-main">
+        <div class="panel-main__inner panel-inverted">
+            <div class="panel-main__content"> 
+                <h1 class="panel-cover__title panel-title">
+                    <a href="https://www.aaron-torres.com/"  title="link to homepage for Aaron&#39;s Desk Chair Adventures">Aaron&#39;s Desk Chair Adventures</a>
+                </h1>
+                <hr class="panel-cover__divider" />
+                <p class="panel-cover__description">  This site is built using <a href="http://gohugo.io">hugo</a> and the theme is built by <a href="http://fredrikloch.me">Fredrik</a> if you enjoy it, it is available at <a href="https://github.com/SenjinDarashiva/hugo-uno">github</a>  </p>
+                <hr class="panel-cover__divider panel-cover__divider--secondary" />
+                <div class="navigation-wrapper">
+                    <nav class="cover-navigation cover-navigation--primary">
+                        <ul class="navigation">
+                            <li class="navigation__item"><a href="https://www.aaron-torres.com#blog" title="link to Aaron&#39;s Desk Chair Adventures blog" class="blog-button">Blog</a> </li></br>
+                            
+                            
+                       </ul>
+                    </nav> <nav class="cover-navigation navigation--social">
+    <ul class="navigation">    </br>    </ul>
+</nav>
+ </div>
+            </div>
+        </div>
+        <div class="panel-cover--overlay"></div>
+    </div>
+</header>
+</div>
+<noscript>
+    <style>
+        #scriptHeader {display:none;}
+        .navigation-wrapper{
+            display: block;
+            top: 0;
+        }
+    </style>
+
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url()">
+        <div class="panel-main">
+            <div class="panel-main__inner panel-inverted">
+                <div class="panel-main__content"> 
+                    <h1 class="panel-cover__title panel-title">
+                        <a href="https://www.aaron-torres.com/"  title="link to homepage for Aaron&#39;s Desk Chair Adventures">Aaron&#39;s Desk Chair Adventures</a>
+                    </h1>
+                    <hr class="panel-cover__divider" />
+                    <p class="panel-cover__description">  This site is built using <a href="http://gohugo.io">hugo</a> and the theme is built by <a href="http://fredrikloch.me">Fredrik</a> if you enjoy it, it is available at <a href="https://github.com/SenjinDarashiva/hugo-uno">github</a>  </p>
+                    <hr class="panel-cover__divider panel-cover__divider--secondary" />
+                    <div class="navigation-wrapper">
+                        <nav class="cover-navigation cover-navigation--primary">
+                            <ul class="navigation">
+                                <li class="navigation__item"><a href="https://www.aaron-torres.com/#blog" title="link to Aaron&#39;s Desk Chair Adventures blog" class="blog-button">Blog</a> </li></br>
+                                
+                                
+                           </ul>
+                        </nav> <nav class="cover-navigation navigation--social">
+    <ul class="navigation">    </br>    </ul>
+</nav>
+ </div>
+                </div>
+            </div>
+            <div class="panel-cover--overlay"></div>
+        </div>
+    </header>
+</noscript>
+
+        <div class="content-wrapper">
+            <div class="content-wrapper__inner">
+                <div class="post">
+                    <h1>Go Handlers and State</h1>
+                    <span class="post-date">Sun, Jun 14, 2015</span>
+                    <p>Today I&rsquo;d like to get a bit technical about things I&rsquo;ve been learning and working on in the Go language</p>
+<p>Sometimes it&rsquo;s helpful to pass additional state into a <a href="http://golang.org/pkg/net/http/#HandlerFunc">web handler function</a>. For all the examples below, lets assume you want to have a toggle for authentication that is checked once within the handler function. These functions have a specific signature and make it difficult to both add parameters and remain compatible with other libraries. There are many ways to accomplish this, including middleware with some combination of <a href="https://github.com/codegangsta/negroni">middleware</a> and <a href="http://www.gorillatoolkit.org/pkg/context">context</a> libraries. This has the advantage of allowing each request to modify the stored context value without interfering with other handlers. It&rsquo;s a bit complicated if you happen to forget to turn on the middleware and requires a diligent programmer to not hit panics inside the handler by implementing functions like DoAuth below.</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">key</span> <span class="kt">int</span>
+
+<span class="kd">const</span> <span class="nx">AuthKey</span> <span class="nx">key</span> <span class="p">=</span> <span class="mi">0</span>
+
+<span class="kd">func</span> <span class="nf">UseAuth</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">,</span> <span class="nx">next</span> <span class="nx">http</span><span class="p">.</span><span class="nx">HandlerFunc</span><span class="p">){</span>
+    <span class="nx">context</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="nx">r</span><span class="p">,</span> <span class="nx">AuthKey</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+    <span class="nf">next</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">r</span><span class="p">)</span>
+    <span class="nx">context</span><span class="p">.</span><span class="nf">Clear</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">DoAuth</span><span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">){</span>
+    <span class="c1">// in case middle-ware isn&#39;t turned on...
+</span><span class="c1"></span>    <span class="k">if</span> <span class="nx">doAuth</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">r</span><span class="p">,</span> <span class="nx">AuthKey</span><span class="p">);</span> <span class="nx">ok</span><span class="p">{</span>
+        <span class="k">return</span> <span class="nx">doAuth</span><span class="p">,</span> <span class="kc">nil</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;middleware off&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">AllTheInfo</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">){</span>
+    <span class="k">if</span> <span class="nx">doAuth</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">DoAuth</span><span class="p">(</span><span class="nx">r</span><span class="p">);</span> <span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="nx">doAuth</span><span class="p">{</span>
+        <span class="c1">// do something here
+</span><span class="c1"></span>    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">(){</span>
+    <span class="nx">n</span> <span class="o">:=</span> <span class="nx">negroni</span><span class="p">.</span><span class="nf">New</span><span class="p">()</span>
+    <span class="nx">n</span><span class="p">.</span><span class="nf">Use</span><span class="p">(</span><span class="nx">UseAuth</span><span class="p">)</span>
+
+    <span class="nx">mux</span> <span class="p">=</span> <span class="nx">http</span><span class="p">.</span><span class="nf">NewServeMux</span><span class="p">()</span>
+    <span class="nx">mux</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/&#34;</span><span class="p">,</span> <span class="nx">AllTheInfo</span><span class="p">)</span>
+
+    <span class="nx">n</span><span class="p">.</span><span class="nf">UseHandler</span><span class="p">(</span><span class="nx">mux</span><span class="p">)</span>
+    <span class="nx">n</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;:8000&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>A simpler, but potentially less flexible approach is to use controllers. It&rsquo;s important to remember and keep in mind that controller variables should not be modified inside the handler as it will modify the controller for all other handlers that make use of it. For example, it may seem tempting to set some state based on the current request, but this is not recommended out of the box. Some examples of packages that get around this limitation by creating a controller each request include <a href="https://github.com/gocraft/web">gocraft/web</a> and this <a href="https://github.com/codegangsta/controller">controller</a> library.</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Controller</span> <span class="kd">struct</span><span class="p">{</span>
+    <span class="nx">DoAuth</span> <span class="kt">bool</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">Controller</span><span class="p">)</span> <span class="nf">AllTheInfo</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">){</span>
+    <span class="k">if</span> <span class="nx">c</span><span class="p">.</span><span class="nx">DoAuth</span><span class="p">{</span>
+        <span class="c1">// do something here
+</span><span class="c1"></span>    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">(){</span>
+    <span class="nx">c</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Controller</span><span class="p">{</span><span class="nx">DoAuth</span><span class="p">:</span> <span class="kc">true</span><span class="p">}</span>
+    <span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/&#34;</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">AllTheInfo</span><span class="p">)</span>
+    <span class="nx">http</span><span class="p">.</span><span class="nf">ListenAndServe</span><span class="p">(</span><span class="s">&#34;:8000&#34;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>Finally, a very light-weight approach I like to make use of is closures. Closures allow the state to be modified from within the handler and are also granular enough that you can tweak them for every route without initializing additional controllers or wrapping every route with middleware incurring context look-up and reflection overhead.</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">CheckAllTheInfo</span><span class="p">(</span><span class="nx">DoAuth</span> <span class="kt">bool</span><span class="p">)</span> <span class="kd">func</span><span class="p">(</span><span class="nx">w</span> <span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">Request</span><span class="p">){</span>
+    <span class="k">return</span> <span class="kd">func</span><span class="p">(</span><span class="nx">w</span> <span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">Request</span><span class="p">){</span>
+        <span class="k">if</span> <span class="nx">DoAuth</span><span class="p">{</span>
+            <span class="c1">// do something here
+</span><span class="c1"></span>        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">(){</span>
+    <span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/&#34;</span><span class="p">,</span> <span class="nf">CheckAllTheInfo</span><span class="p">(</span><span class="kc">true</span><span class="p">))</span>
+    <span class="nx">http</span><span class="p">.</span><span class="nf">ListenAndServe</span><span class="p">(</span><span class="s">&#34;:8000&#34;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>Overall, there&rsquo;s a lot of ways to accomplish injecting state for web handler functions in Go. There are a number of other middleware packages besides negroni and there are even context objects build into the <a href="https://godoc.org/golang.org/x/net/context">standard library</a> now. I use combinations of all of these as one doesn&rsquo;t scratch all the itches I have. You can also combine these, for example you could attach a context object to a controller that is safe to modify or wrap a controller method in a closure.</p>
+
+                </div>
+            </div>
+        </div>
+    </body>
+    
+</html>

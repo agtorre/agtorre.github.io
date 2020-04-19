@@ -1,11 +1,13 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Profiling on Aaron Torres</title>
+    <title>profiling on Aaron&#39;s Desk Chair Adventures</title>
     <link>https://www.aaron-torres.com/tags/profiling/</link>
-    <description>Recent content in Profiling on Aaron Torres</description>
+    <description>Recent content in profiling on Aaron&#39;s Desk Chair Adventures</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
+    <managingEditor>me@aaron-torres.com (Aaron Torres)</managingEditor>
+    <webMaster>me@aaron-torres.com (Aaron Torres)</webMaster>
     <lastBuildDate>Sun, 05 Jan 2014 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.aaron-torres.com/tags/profiling/index.xml" rel="self" type="application/rss+xml" />
@@ -13,10 +15,10 @@
     
     <item>
       <title>Looking and Moving Forward</title>
-      <link>https://www.aaron-torres.com/post/moving-forward/</link>
+      <link>https://www.aaron-torres.com/posts/moving-forward/</link>
       <pubDate>Sun, 05 Jan 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.aaron-torres.com/post/moving-forward/</guid>
+      <author>me@aaron-torres.com (Aaron Torres)</author>
+      <guid>https://www.aaron-torres.com/posts/moving-forward/</guid>
       <description>I wanted to start this year off with a new blog built on top of Github Pages and Jekyll, and a look back on what went well (and didn&amp;rsquo;t) in 2013.
 The Job The single biggest event of this year was completely uprooting our lives, packing up, and leaving the state. We did this with a car full of a few clothes, a box of important documents, a laptop, 1 cat, 1 dog, 1 baby, and 2 adult humans.</description>
     </item>

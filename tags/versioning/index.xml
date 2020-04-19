@@ -1,11 +1,13 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Versioning on Aaron Torres</title>
+    <title>versioning on Aaron&#39;s Desk Chair Adventures</title>
     <link>https://www.aaron-torres.com/tags/versioning/</link>
-    <description>Recent content in Versioning on Aaron Torres</description>
+    <description>Recent content in versioning on Aaron&#39;s Desk Chair Adventures</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
+    <managingEditor>me@aaron-torres.com (Aaron Torres)</managingEditor>
+    <webMaster>me@aaron-torres.com (Aaron Torres)</webMaster>
     <lastBuildDate>Tue, 17 May 2016 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.aaron-torres.com/tags/versioning/index.xml" rel="self" type="application/rss+xml" />
@@ -13,10 +15,10 @@
     
     <item>
       <title>Go API Versioning with Gorilla Mux</title>
-      <link>https://www.aaron-torres.com/post/api-versioning-gorilla-mux/</link>
+      <link>https://www.aaron-torres.com/posts/api-versioning-gorilla-mux/</link>
       <pubDate>Tue, 17 May 2016 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.aaron-torres.com/post/api-versioning-gorilla-mux/</guid>
+      <author>me@aaron-torres.com (Aaron Torres)</author>
+      <guid>https://www.aaron-torres.com/posts/api-versioning-gorilla-mux/</guid>
       <description>Code-Based Versioning Recently I had a problem where I needed to implement API versioning in code. The versions would share the vast majority of routes/handlers and I found that I wanted to re-use the base routes and modifying them slightly between versions. I imagined using Gorilla mux router as the base with all the routes and then creating a new router for v1, v2, etc that would &amp;lsquo;inherit&amp;rsquo; the base routes and only modify a few.</description>
     </item>
     

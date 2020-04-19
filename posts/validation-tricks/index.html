@@ -1,0 +1,245 @@
+    <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title> Go Validation Tricks &middot; Aaron&#39;s Desk Chair Adventures </title>
+    
+    <link rel="stylesheet" type="text/css" href="https://www.aaron-torres.com/css/uno.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.aaron-torres.com/css/lightGallery.css" />
+    
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Aaron&#39;s Desk Chair Adventures" />
+    
+    <script src="https://www.aaron-torres.com/js/jquery.min.js"></script>
+    <script src="https://www.aaron-torres.com/js/main.min.js">
+    </script>
+</head>
+
+    <body>
+        <div id="scriptHeader">
+    <span class="mobile btn-mobile-menu">
+            <i class="fa fa-bars btn-mobile-menu__icon"></i>
+            <i class="fa fa-times btn-mobile-close__icon hidden"> </i>
+    </span>
+    <header class="
+        
+            panel-cover panel-cover--collapsed
+        " >
+    <div class="panel-main">
+        <div class="panel-main__inner panel-inverted">
+            <div class="panel-main__content"> 
+                <h1 class="panel-cover__title panel-title">
+                    <a href="https://www.aaron-torres.com/"  title="link to homepage for Aaron&#39;s Desk Chair Adventures">Aaron&#39;s Desk Chair Adventures</a>
+                </h1>
+                <hr class="panel-cover__divider" />
+                <p class="panel-cover__description">  This site is built using <a href="http://gohugo.io">hugo</a> and the theme is built by <a href="http://fredrikloch.me">Fredrik</a> if you enjoy it, it is available at <a href="https://github.com/SenjinDarashiva/hugo-uno">github</a>  </p>
+                <hr class="panel-cover__divider panel-cover__divider--secondary" />
+                <div class="navigation-wrapper">
+                    <nav class="cover-navigation cover-navigation--primary">
+                        <ul class="navigation">
+                            <li class="navigation__item"><a href="https://www.aaron-torres.com#blog" title="link to Aaron&#39;s Desk Chair Adventures blog" class="blog-button">Blog</a> </li></br>
+                            
+                            
+                       </ul>
+                    </nav> <nav class="cover-navigation navigation--social">
+    <ul class="navigation">    </br>    </ul>
+</nav>
+ </div>
+            </div>
+        </div>
+        <div class="panel-cover--overlay"></div>
+    </div>
+</header>
+</div>
+<noscript>
+    <style>
+        #scriptHeader {display:none;}
+        .navigation-wrapper{
+            display: block;
+            top: 0;
+        }
+    </style>
+
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url()">
+        <div class="panel-main">
+            <div class="panel-main__inner panel-inverted">
+                <div class="panel-main__content"> 
+                    <h1 class="panel-cover__title panel-title">
+                        <a href="https://www.aaron-torres.com/"  title="link to homepage for Aaron&#39;s Desk Chair Adventures">Aaron&#39;s Desk Chair Adventures</a>
+                    </h1>
+                    <hr class="panel-cover__divider" />
+                    <p class="panel-cover__description">  This site is built using <a href="http://gohugo.io">hugo</a> and the theme is built by <a href="http://fredrikloch.me">Fredrik</a> if you enjoy it, it is available at <a href="https://github.com/SenjinDarashiva/hugo-uno">github</a>  </p>
+                    <hr class="panel-cover__divider panel-cover__divider--secondary" />
+                    <div class="navigation-wrapper">
+                        <nav class="cover-navigation cover-navigation--primary">
+                            <ul class="navigation">
+                                <li class="navigation__item"><a href="https://www.aaron-torres.com/#blog" title="link to Aaron&#39;s Desk Chair Adventures blog" class="blog-button">Blog</a> </li></br>
+                                
+                                
+                           </ul>
+                        </nav> <nav class="cover-navigation navigation--social">
+    <ul class="navigation">    </br>    </ul>
+</nav>
+ </div>
+                </div>
+            </div>
+            <div class="panel-cover--overlay"></div>
+        </div>
+    </header>
+</noscript>
+
+        <div class="content-wrapper">
+            <div class="content-wrapper__inner">
+                <div class="post">
+                    <h1>Go Validation Tricks</h1>
+                    <span class="post-date">Thu, Jun 25, 2015</span>
+                    <p>As I&rsquo;ve gotten more familiar with Go web programming, I&rsquo;ve tried to solve the problem of form and payload validation a number of different ways. Coming from a Python background, I initially really liked the idea of using a validation method.</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Form</span> <span class="kd">struct</span><span class="p">{</span>
+    <span class="nx">Field1</span> <span class="kt">string</span> <span class="s">`json:&#34;field1&#34;`</span>
+    <span class="nx">Field2</span> <span class="kt">int</span>    <span class="s">`json:&#34;field2&#34;`</span>
+<span class="p">}</span>
+
+<span class="c1">// we can pass in multiple arguments like db, or whatever else.
+</span><span class="c1">// do any validation necessary using the values in Form
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">f</span> <span class="o">*</span><span class="nx">Form</span><span class="p">)</span> <span class="nf">Validate</span><span class="p">(</span><span class="nx">db</span> <span class="o">*</span><span class="nx">Database</span><span class="p">)</span> <span class="kt">error</span><span class="p">{</span>
+<span class="p">}</span>
+</code></pre></div><p>There are a few problems with this approach. The first problem is that this validate method is likely to return an error immediately rather than aggregate them all. The second problem is that this validation method is incredibly painful to mock when testing.</p>
+<h3 id="first-problem">First Problem</h3>
+<p>Let&rsquo;s take a stab at the first problem. In Go, errors are actually an <a href="http://blog.golang.org/error-handling-and-go">interface</a>. One way to implement an error interface and return all errors at the same time might be this Verror approach that <a href="http://husobee.github.io">husobee</a> and I came up with:</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&#34;fmt&#34;</span>
+    <span class="s">&#34;strings&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">NewVerror</span><span class="p">()</span> <span class="o">*</span><span class="nx">Verrors</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="nx">Verrors</span><span class="p">{</span>
+        <span class="nx">Errors</span><span class="p">:</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">][]</span><span class="kt">string</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// keys represent the field
+</span><span class="c1">// and each field can have numerous errors
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Verrors</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Errors</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">][]</span><span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="c1">// also works with duplicate errors!
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">Verrors</span><span class="p">)</span> <span class="nf">AddError</span><span class="p">(</span><span class="nx">field</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">Errors</span><span class="p">[</span><span class="nx">field</span><span class="p">];</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+        <span class="nx">e</span><span class="p">.</span><span class="nx">Errors</span><span class="p">[</span><span class="nx">field</span><span class="p">]</span> <span class="p">=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">string</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">ele</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">e</span><span class="p">.</span><span class="nx">Errors</span><span class="p">[</span><span class="nx">field</span><span class="p">]</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nx">ele</span> <span class="o">==</span> <span class="nx">err</span> <span class="p">{</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="nx">e</span><span class="p">.</span><span class="nx">Errors</span><span class="p">[</span><span class="nx">field</span><span class="p">]</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">Errors</span><span class="p">[</span><span class="nx">field</span><span class="p">],</span> <span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// we can aggregate together functions that return verrors
+</span><span class="c1">// or multiple verrors from go routines, for example
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">Verrors</span><span class="p">)</span> <span class="nf">Merge</span><span class="p">(</span><span class="nx">e2</span> <span class="o">*</span><span class="nx">Verrors</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">values</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">e2</span><span class="p">.</span><span class="nx">Errors</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">value</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">values</span> <span class="p">{</span>
+            <span class="nx">e</span><span class="p">.</span><span class="nf">AddError</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// if you want to return nil instead of an empty verror
+</span><span class="c1">// check if Valid return false first
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">Verrors</span><span class="p">)</span> <span class="nf">Valid</span><span class="p">()</span> <span class="kt">bool</span><span class="p">{</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">Errors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="p">}</span>
+
+<span class="c1">// satisfies the error interface
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">Verrors</span><span class="p">)</span> <span class="nf">Error</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+    <span class="nx">response</span> <span class="o">:=</span> <span class="s">&#34;&#34;</span>
+    <span class="k">for</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">e</span><span class="p">.</span><span class="nx">Errors</span> <span class="p">{</span>
+        <span class="nx">response</span> <span class="o">+=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;%s: [%s]&#34;</span><span class="p">,</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">Join</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="s">&#34;,&#34;</span><span class="p">))</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">response</span>
+<span class="p">}</span>
+</code></pre></div><p>Verrors are pretty flexible, you can even return them as JSON with some additional type checking. Keep in mind this doesn&rsquo;t work too well if you&rsquo;re returning XML.</p>
+<h3 id="second-problem">Second Problem</h3>
+<p>Mocking in tests is a very large topic, and could be a blog post all on its own. In Go, the only way to mock a method is with an interface. There&rsquo;s a more comprehensive example <a href="http://play.golang.org/p/cWLT0aSkF2">here</a>, but the gist of it is:</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Form</span> <span class="kd">struct</span><span class="p">{</span>
+    <span class="nx">Field1</span> <span class="kt">string</span> <span class="s">`json:&#34;field1&#34;`</span>
+    <span class="nx">Field2</span> <span class="kt">int</span>    <span class="s">`json:&#34;field2&#34;`</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">f</span> <span class="o">*</span><span class="nx">Form</span><span class="p">)</span> <span class="nf">Validate</span><span class="p">(</span><span class="nx">db</span> <span class="o">*</span><span class="nx">Database</span><span class="p">)</span> <span class="kt">error</span><span class="p">{</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">FormValidater</span> <span class="kd">interface</span><span class="p">{</span>
+     <span class="nf">Validate</span><span class="p">(</span><span class="nx">db</span> <span class="o">*</span><span class="nx">Database</span><span class="p">)</span> <span class="kt">error</span>
+<span class="p">}</span>
+
+<span class="c1">// we can pass in a mock here
+</span><span class="c1">// rarely this simple unfortunately
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">ShowMock</span><span class="p">(</span><span class="nx">f</span> <span class="nx">FormValidater</span><span class="p">){</span>
+    <span class="nx">db</span> <span class="o">:=</span> <span class="nf">getDatabase</span><span class="p">()</span>
+    <span class="nx">f</span><span class="p">.</span><span class="nf">Validate</span><span class="p">(</span><span class="nx">db</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>If you&rsquo;re unable to wrap your methods in an interface, for example when the method and its struct are both in the same scope, mocking these methods is pretty much impossible.</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">Handler</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">){</span>
+    <span class="nx">db</span> <span class="o">:=</span> <span class="nf">getDatabase</span><span class="p">()</span>
+    <span class="nx">c</span> <span class="o">:=</span> <span class="nf">getFromJSON</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span>
+    <span class="nx">c</span><span class="p">.</span><span class="nf">Validate</span><span class="p">(</span><span class="nx">db</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>Another option is using a function that takes the form object as the first argument instead of a method. With functions you can use: <a href="http://play.golang.org/p/oLF1XnRX3C">patch/restore</a>.</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Form</span> <span class="kd">struct</span><span class="p">{</span>
+    <span class="nx">Field1</span> <span class="kt">string</span> <span class="s">`json:&#34;field1&#34;`</span>
+    <span class="nx">Field2</span> <span class="kt">int</span>    <span class="s">`json:&#34;field2&#34;`</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">ValidateForm</span> <span class="p">=</span> <span class="kd">func</span><span class="p">(</span><span class="nx">f</span> <span class="o">*</span><span class="nx">Form</span><span class="p">,</span> <span class="nx">db</span> <span class="o">*</span><span class="nx">Database</span><span class="p">)</span> <span class="kt">error</span><span class="p">{</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">ShowMock</span><span class="p">(){</span>
+    <span class="k">defer</span> <span class="nf">Patch</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ValidateForm</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">f</span> <span class="o">*</span><span class="nx">Form</span><span class="p">,</span> <span class="nx">db</span> <span class="o">*</span><span class="nx">Database</span><span class="p">)</span> <span class="kt">error</span><span class="p">{</span>
+        <span class="k">return</span> <span class="kc">nil</span>
+    <span class="p">}).</span><span class="nf">Restore</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div><p>This has the unfortunate side-effect of modifying the global ValidateForm definition and is not thread-safe. For tests this is typically not an issue, but if you want to avoid patch/restore, another strategy is to make use of struct closure variables:</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Form</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Field1</span> <span class="kt">string</span> <span class="s">`json:&#34;field1&#34;`</span>
+    <span class="nx">Field2</span> <span class="kt">int</span>    <span class="s">`json:&#34;field2&#34;`</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">ValidateForm</span><span class="p">(</span><span class="nx">f</span> <span class="o">*</span><span class="nx">Form</span><span class="p">,</span> <span class="nx">db</span> <span class="o">*</span><span class="nx">Database</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">NewFormProcessor</span><span class="p">()</span> <span class="o">*</span><span class="nx">FormProcessor</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="nx">FormProcessor</span><span class="p">{</span>
+        <span class="nx">ValidateForm</span><span class="p">:</span> <span class="nx">ValidateForm</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// ValidateForm is a closure
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">FormProcessor</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">ValidateForm</span> <span class="kd">func</span><span class="p">(</span><span class="nx">f</span> <span class="o">*</span><span class="nx">Form</span><span class="p">,</span> <span class="nx">db</span> <span class="o">*</span><span class="nx">Database</span><span class="p">)</span> <span class="kt">error</span>
+<span class="p">}</span>
+
+<span class="c1">// an example of mocking ValidateForm that is
+</span><span class="c1">// thread-safe
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">f</span> <span class="nx">FormProcessor</span><span class="p">)</span> <span class="nf">ShowMock</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">f</span><span class="p">.</span><span class="nx">ValidateForm</span> <span class="p">=</span> <span class="kd">func</span><span class="p">(</span><span class="nx">f</span> <span class="o">*</span><span class="nx">Form</span><span class="p">,</span> <span class="nx">db</span> <span class="o">*</span><span class="nx">Database</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">nil</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div><p>The controllers discussed <a href="/post/handlers-and-state/">here</a> can make great use of an embedded FormProcessor (which can hold any number of validation functions). An example can be found <a href="http://play.golang.org/p/dkGVfVG86u">here</a>.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>I&rsquo;ve touched on a few strategies for tackling the validation problem, and I also highly encourage you to check out this <a href="https://github.com/asaskevich/govalidator">validation library</a> to supplement this information. I&rsquo;ll probably discuss this more in the future as I inevitably revisit this myself again.</p>
+
+                </div>
+            </div>
+        </div>
+    </body>
+    
+</html>
