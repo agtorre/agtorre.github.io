@@ -1,229 +1,65 @@
-<!doctype html>
+<!doctype html><html lang=en><head><title>Aaron's Desk Chair Adventures</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="The HTML5 Herald"><meta name=author content="Aaron Torres"><meta property="og:title" content="Go API Versioning with Gorilla Mux"><meta property="og:description" content="Code-Based Versioning Recently I had a problem where I needed to implement API versioning in code. The versions would share the vast majority of routes/handlers and I found that I wanted to re-use the base routes and modifying them slightly between versions."><meta property="og:type" content="article"><meta property="og:url" content="https://www.aaron-torres.com/post/api-versioning-gorilla-mux/"><meta property="article:published_time" content="2016-05-17T00:00:00+00:00"><meta property="article:modified_time" content="2016-05-17T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Go API Versioning with Gorilla Mux"><meta name=twitter:description content="Code-Based Versioning Recently I had a problem where I needed to implement API versioning in code. The versions would share the vast majority of routes/handlers and I found that I wanted to re-use the base routes and modifying them slightly between versions."><meta name=generator content="Hugo 0.70.0-DEV"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin=anonymous><link rel=stylesheet href=https://www.aaron-torres.com/fontawesome/css/all.min.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda"><link rel=stylesheet type=text/css href=/css/styles.css><link rel=stylesheet href=https://www.aaron-torres.com/css/tmp.css></head><body><div id=container><header><h1><a href=/>Aaron&rsquo;s Desk Chair Adventures</a></h1><ul id=social-media><li><a href=mailto:me@aaron-torres.com title="Email me"><i class="fas fa-envelope fa-lg"></i></a></li><li><a href=https://github.com/agtorre title=GitHub><i class="fab fa-github fa-lg"></i></a></li><li><a href=https://twitter.com/aarontorres title=Twitter><i class="fab fa-twitter fa-lg"></i></a></li><li><a href=https://linkedin.com/in/torresaaron title=LinkedIn><i class="fab fa-linkedin fa-lg"></i></a></li></ul><p><em>Code. Engineering Management. Fun.</em></p></header><nav><ul><li><a href=/post><i class="fa-li fa fa-lg"></i><span>Archive</span></a></li><li><a href=/tags><i class="fa-li fa fa-lg"></i><span>Tags</span></a></li></ul></nav><main><article><h1>Go API Versioning with Gorilla Mux</h1><aside><ul><li><time class=post-date datetime=2016-05-17T00:00:00Z>May 17, 2016</time></li><li><em><a href=/tags/development>#development</a>
+,
+<a href=/tags/golang>#golang</a>
+,
+<a href=/tags/versioning>#versioning</a></em></li><li>2 minutes read</li></ul></aside><h3 id=code-based-versioning>Code-Based Versioning</h3><p>Recently I had a problem where I needed to implement API versioning in code. The versions would share the vast majority of routes/handlers and I found that I wanted to re-use the base routes and modifying them slightly between versions. I imagined using <a href=http://www.gorillatoolkit.org/pkg/mux>Gorilla mux router</a> as the base with all the routes and then creating a new router for v1, v2, etc that would &lsquo;inherit&rsquo; the base routes and only modify a few. That would maximize code-reuse as I&rsquo;d only have to modify the latest route in one place for many versions to receive the benefit.</p><p>I searched around Google, Stack Overflow, and the Gorilla mux documentation about attaching a subrouter to a route and similar terms, but I struggled to find a working solution. I found a few useful posts and here&rsquo;s the result:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
 
-<html lang="en">
+<span style=color:#f92672>import</span> (
+        <span style=color:#e6db74>&#34;fmt&#34;</span>
+        <span style=color:#e6db74>&#34;net/http&#34;</span>
 
-<head>
-  <title>Aaron&#39;s Desk Chair Adventures</title>
-  <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="The HTML5 Herald" />
-<meta name="author" content="Aaron Torres" /><meta property="og:title" content="Go API Versioning with Gorilla Mux" />
-<meta property="og:description" content="Code-Based Versioning Recently I had a problem where I needed to implement API versioning in code. The versions would share the vast majority of routes/handlers and I found that I wanted to re-use the base routes and modifying them slightly between versions." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://www.aaron-torres.com/post/api-versioning-gorilla-mux/" />
-<meta property="article:published_time" content="2016-05-17T00:00:00+00:00" />
-<meta property="article:modified_time" content="2016-05-17T00:00:00+00:00" />
-
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Go API Versioning with Gorilla Mux"/>
-<meta name="twitter:description" content="Code-Based Versioning Recently I had a problem where I needed to implement API versioning in code. The versions would share the vast majority of routes/handlers and I found that I wanted to re-use the base routes and modifying them slightly between versions."/>
-
-<meta name="generator" content="Hugo 0.70.0-DEV" />
-    
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
-  <link rel="stylesheet" href="https://www.aaron-torres.com/fontawesome/css/all.min.css" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
-  <link rel="stylesheet" type="text/css" href="/css/styles.css" /></head>
-
-<body>
-  <div id="container">
-    <header>
-      <h1>
-                <a href="/">Aaron&rsquo;s Desk Chair Adventures</a>
-            </h1>
-
-      <ul id="social-media">
-             <li>
-               <a href="mailto:me@aaron-torres.com" title="Email me">
-               <i class="fas fa-envelope fa-lg"></i>
-               </a>
-             </li>
-             <li>
-               <a href="https://github.com/agtorre" title="GitHub">
-               <i class="fab fa-github fa-lg"></i>
-               </a>
-             </li>
-             <li>
-               <a href="https://twitter.com/aarontorres" title="Twitter">
-               <i class="fab fa-twitter fa-lg"></i>
-               </a>
-             </li>
-             <li>
-               <a href="https://linkedin.com/in/torresaaron" title="LinkedIn">
-               <i class="fab fa-linkedin fa-lg"></i>
-               </a>
-             </li>
-      </ul>
-      
-      <p><em>Code. Engineering Management. Fun.</em></p>
-      
-    </header>
-
-    
-<nav>
-    <ul>
-        
-        <li>
-            <a class="" href="/tags">
-                <i class="fa-li fa  fa-lg"></i><span>Tags</span>
-            </a>
-        </li>
-        
-    </ul>
-</nav>
-
-
-    <main>
-
-
-
-
-<article>
-
-    <h1>Go API Versioning with Gorilla Mux</h1>
-
-    
-      <aside>
-    <ul>
-        <li>
-            <time class="post-date" datetime="2016-05-17T00:00:00Z">May 17, 2016</time>
-        </li>
-        
-
-        
-        <li>
-            <em>
-                
-                    
-                    <a href="/tags/development">#development</a>
-                
-                    , 
-                    <a href="/tags/golang">#golang</a>
-                
-                    , 
-                    <a href="/tags/versioning">#versioning</a>
-                
-            </em>
-        </li>
-        
-
-        <li>2 minutes read</li>
-    </ul>
-</aside>
-
-    
-
-    
-
-
-    <h3 id="code-based-versioning">Code-Based Versioning</h3>
-<p>Recently I had a problem where I needed to implement API versioning in code. The versions would share the vast majority of routes/handlers and I found that I wanted to re-use the base routes and modifying them slightly between versions. I imagined using <a href="http://www.gorillatoolkit.org/pkg/mux">Gorilla mux router</a> as the base with all the routes and then creating a new router for v1, v2, etc that would &lsquo;inherit&rsquo; the base routes and only modify a few. That would maximize code-reuse as I&rsquo;d only have to modify the latest route in one place for many versions to receive the benefit.</p>
-<p>I searched around Google, Stack Overflow, and the Gorilla mux documentation about attaching a subrouter to a route and similar terms, but I struggled to find a working solution. I found a few useful posts and here&rsquo;s the result:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
-
-<span style="color:#f92672">import</span> (
-        <span style="color:#e6db74">&#34;fmt&#34;</span>
-        <span style="color:#e6db74">&#34;net/http&#34;</span>
-
-        <span style="color:#e6db74">&#34;github.com/gorilla/mux&#34;</span>
+        <span style=color:#e6db74>&#34;github.com/gorilla/mux&#34;</span>
 )
 
-<span style="color:#75715e">// AnotherHandlerLatest is the newest version of AnotherHandler
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">AnotherHandlerLatest</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
-        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Fprintf</span>(<span style="color:#a6e22e">w</span>, <span style="color:#e6db74">&#34;hello from AnotherHandlerLatest.&#34;</span>)
+<span style=color:#75715e>// AnotherHandlerLatest is the newest version of AnotherHandler
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>AnotherHandlerLatest</span>(<span style=color:#a6e22e>w</span> <span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>ResponseWriter</span>, <span style=color:#a6e22e>r</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>Request</span>) {
+        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Fprintf</span>(<span style=color:#a6e22e>w</span>, <span style=color:#e6db74>&#34;hello from AnotherHandlerLatest.&#34;</span>)
 }
 
-<span style="color:#75715e">// ExampleHandlerLatest is the newest version of ExampleHandler
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">ExampleHandlerLatest</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
-        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Fprintf</span>(<span style="color:#a6e22e">w</span>, <span style="color:#e6db74">&#34;hello from ExampleHandlerLatest.&#34;</span>)
+<span style=color:#75715e>// ExampleHandlerLatest is the newest version of ExampleHandler
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>ExampleHandlerLatest</span>(<span style=color:#a6e22e>w</span> <span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>ResponseWriter</span>, <span style=color:#a6e22e>r</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>Request</span>) {
+        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Fprintf</span>(<span style=color:#a6e22e>w</span>, <span style=color:#e6db74>&#34;hello from ExampleHandlerLatest.&#34;</span>)
 }
 
-<span style="color:#75715e">// ExampleHandlerV1 is a v1-compatible version of ExampleHandler
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">ExampleHandlerV1</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
-        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Fprintf</span>(<span style="color:#a6e22e">w</span>, <span style="color:#e6db74">&#34;Hello from ExampleHandlerv1.&#34;</span>)
+<span style=color:#75715e>// ExampleHandlerV1 is a v1-compatible version of ExampleHandler
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>ExampleHandlerV1</span>(<span style=color:#a6e22e>w</span> <span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>ResponseWriter</span>, <span style=color:#a6e22e>r</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>Request</span>) {
+        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Fprintf</span>(<span style=color:#a6e22e>w</span>, <span style=color:#e6db74>&#34;Hello from ExampleHandlerv1.&#34;</span>)
 }
 
-<span style="color:#75715e">// AddV1Routes takes a router or subrouter and adds all the v1
-</span><span style="color:#75715e">// routes to it
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">AddV1Routes</span>(<span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mux</span>.<span style="color:#a6e22e">Router</span>) {
-        <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/example&#34;</span>, <span style="color:#a6e22e">ExampleHandlerV1</span>)
-        <span style="color:#a6e22e">AddRoutes</span>(<span style="color:#a6e22e">r</span>)
+<span style=color:#75715e>// AddV1Routes takes a router or subrouter and adds all the v1
+</span><span style=color:#75715e>// routes to it
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>AddV1Routes</span>(<span style=color:#a6e22e>r</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>mux</span>.<span style=color:#a6e22e>Router</span>) {
+        <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>HandleFunc</span>(<span style=color:#e6db74>&#34;/example&#34;</span>, <span style=color:#a6e22e>ExampleHandlerV1</span>)
+        <span style=color:#a6e22e>AddRoutes</span>(<span style=color:#a6e22e>r</span>)
 }
 
-<span style="color:#75715e">// AddV2Routes takes a router or subrouter and adds all the v2
-</span><span style="color:#75715e">// routes to it, note that these should probably match
-</span><span style="color:#75715e">// AddRoutes(r *muxRouter) alternatively you can do
-</span><span style="color:#75715e">// var AddV2Routes = AddRoutes
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">AddV2Routes</span>(<span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mux</span>.<span style="color:#a6e22e">Router</span>) {
-        <span style="color:#a6e22e">AddRoutes</span>(<span style="color:#a6e22e">r</span>)
+<span style=color:#75715e>// AddV2Routes takes a router or subrouter and adds all the v2
+</span><span style=color:#75715e>// routes to it, note that these should probably match
+</span><span style=color:#75715e>// AddRoutes(r *muxRouter) alternatively you can do
+</span><span style=color:#75715e>// var AddV2Routes = AddRoutes
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>AddV2Routes</span>(<span style=color:#a6e22e>r</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>mux</span>.<span style=color:#a6e22e>Router</span>) {
+        <span style=color:#a6e22e>AddRoutes</span>(<span style=color:#a6e22e>r</span>)
 }
 
-<span style="color:#75715e">// AddRoutes takes a router or subrouter and adds all the latest
-</span><span style="color:#75715e">// routes to it
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">AddRoutes</span>(<span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mux</span>.<span style="color:#a6e22e">Router</span>) {
-        <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/example&#34;</span>, <span style="color:#a6e22e">ExampleHandlerLatest</span>)
-        <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/example2&#34;</span>, <span style="color:#a6e22e">AnotherHandlerLatest</span>)
+<span style=color:#75715e>// AddRoutes takes a router or subrouter and adds all the latest
+</span><span style=color:#75715e>// routes to it
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>AddRoutes</span>(<span style=color:#a6e22e>r</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>mux</span>.<span style=color:#a6e22e>Router</span>) {
+        <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>HandleFunc</span>(<span style=color:#e6db74>&#34;/example&#34;</span>, <span style=color:#a6e22e>ExampleHandlerLatest</span>)
+        <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>HandleFunc</span>(<span style=color:#e6db74>&#34;/example2&#34;</span>, <span style=color:#a6e22e>AnotherHandlerLatest</span>)
 }
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-        <span style="color:#a6e22e">router</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">mux</span>.<span style="color:#a6e22e">NewRouter</span>()
+<span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+        <span style=color:#a6e22e>router</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>mux</span>.<span style=color:#a6e22e>NewRouter</span>()
 
-        <span style="color:#75715e">// latest
-</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">AddRoutes</span>(<span style="color:#a6e22e">router</span>)
+        <span style=color:#75715e>// latest
+</span><span style=color:#75715e></span>        <span style=color:#a6e22e>AddRoutes</span>(<span style=color:#a6e22e>router</span>)
 
-        <span style="color:#75715e">// v1
-</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">AddV1Routes</span>(<span style="color:#a6e22e">router</span>.<span style="color:#a6e22e">PathPrefix</span>(<span style="color:#e6db74">&#34;/v1&#34;</span>).<span style="color:#a6e22e">Subrouter</span>())
+        <span style=color:#75715e>// v1
+</span><span style=color:#75715e></span>        <span style=color:#a6e22e>AddV1Routes</span>(<span style=color:#a6e22e>router</span>.<span style=color:#a6e22e>PathPrefix</span>(<span style=color:#e6db74>&#34;/v1&#34;</span>).<span style=color:#a6e22e>Subrouter</span>())
 
-        <span style="color:#75715e">// v2
-</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">AddV2Routes</span>(<span style="color:#a6e22e">router</span>.<span style="color:#a6e22e">PathPrefix</span>(<span style="color:#e6db74">&#34;/v2&#34;</span>).<span style="color:#a6e22e">Subrouter</span>())
+        <span style=color:#75715e>// v2
+</span><span style=color:#75715e></span>        <span style=color:#a6e22e>AddV2Routes</span>(<span style=color:#a6e22e>router</span>.<span style=color:#a6e22e>PathPrefix</span>(<span style=color:#e6db74>&#34;/v2&#34;</span>).<span style=color:#a6e22e>Subrouter</span>())
 }
-</code></pre></div><p>The end result of this is that /example and /v2/example point at the same handler, but /v1/example points at a different handler. When a new version is created, I rename HandlerLatest to HandlerVn where n is the previous newest version. I add it to the AddVnRoutes, create an AddVn+1Routes and new version is made! I can easily deprecate older versions (and their associated handlers) as needed.</p>
-
-
-</article>
-
-
-<section class="post-nav">
-    <ul>
-        
-        <li>
-            <a href="https://www.aaron-torres.com/post/validation-tricks/"><i class="fa fa-chevron-circle-left"></i> Go Validation Tricks</a>
-        </li>
-        
-        
-    </ul>
-</section>
-    
-    
-
-
-
-
-
-</main>
-    <footer>
-        <h6>Copyright © 2020 - Aaron Torres |
-            Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
-            <a href="https://www.aaron-torres.comindex.xml">Subscribe </a></h6>
-    </footer>
-</div>
-<script src="/js/scripts.js"></script>
-
-  
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-8973677-3', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-</body>
-
-</html>
-
+</code></pre></div><p>The end result of this is that /example and /v2/example point at the same handler, but /v1/example points at a different handler. When a new version is created, I rename HandlerLatest to HandlerVn where n is the previous newest version. I add it to the AddVnRoutes, create an AddVn+1Routes and new version is made! I can easily deprecate older versions (and their associated handlers) as needed.</p></article><section class=post-nav><ul><li><a href=https://www.aaron-torres.com/post/validation-tricks/><i class="fa fa-chevron-circle-left"></i>Go Validation Tricks</a></li></ul></section></main><footer><h6>Copyright © 2020 - Aaron Torres |
+Rendered by <a href=https://gohugo.io title=Hugo>Hugo</a> |
+<a href=https://www.aaron-torres.comindex.xml>Subscribe</a></h6></footer></div><script src=/js/scripts.js></script><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-8973677-3','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

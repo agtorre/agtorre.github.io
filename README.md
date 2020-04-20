@@ -6,5 +6,5 @@ This is the destination source for https://www.aaron-torres.com. The site is bui
 
 ## License
 The files and directories contained here are Copyright Aaron Torres, or
-their respective copyright holders. I'm using the hugo-uno theme located here:
-https://github.com/fredrikloch/hugo-uno.
+their respective copyright holders. I'm using the hugo-kiera theme located here:
+https://github.com/funkydan2/hugo-kiera.

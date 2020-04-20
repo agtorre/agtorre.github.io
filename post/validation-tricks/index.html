@@ -1,307 +1,131 @@
-<!doctype html>
-
-<html lang="en">
-
-<head>
-  <title>Aaron&#39;s Desk Chair Adventures</title>
-  <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="The HTML5 Herald" />
-<meta name="author" content="Aaron Torres" /><meta property="og:title" content="Go Validation Tricks" />
-<meta property="og:description" content="As I&rsquo;ve gotten more familiar with Go web programming, I&rsquo;ve tried to solve the problem of form and payload validation a number of different ways. Coming from a Python background, I initially really liked the idea of using a validation method." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://www.aaron-torres.com/post/validation-tricks/" />
-<meta property="article:published_time" content="2015-06-25T00:00:00+00:00" />
-<meta property="article:modified_time" content="2015-06-25T00:00:00+00:00" />
-
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Go Validation Tricks"/>
-<meta name="twitter:description" content="As I&rsquo;ve gotten more familiar with Go web programming, I&rsquo;ve tried to solve the problem of form and payload validation a number of different ways. Coming from a Python background, I initially really liked the idea of using a validation method."/>
-
-<meta name="generator" content="Hugo 0.70.0-DEV" />
-    
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
-  <link rel="stylesheet" href="https://www.aaron-torres.com/fontawesome/css/all.min.css" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
-  <link rel="stylesheet" type="text/css" href="/css/styles.css" /></head>
-
-<body>
-  <div id="container">
-    <header>
-      <h1>
-                <a href="/">Aaron&rsquo;s Desk Chair Adventures</a>
-            </h1>
-
-      <ul id="social-media">
-             <li>
-               <a href="mailto:me@aaron-torres.com" title="Email me">
-               <i class="fas fa-envelope fa-lg"></i>
-               </a>
-             </li>
-             <li>
-               <a href="https://github.com/agtorre" title="GitHub">
-               <i class="fab fa-github fa-lg"></i>
-               </a>
-             </li>
-             <li>
-               <a href="https://twitter.com/aarontorres" title="Twitter">
-               <i class="fab fa-twitter fa-lg"></i>
-               </a>
-             </li>
-             <li>
-               <a href="https://linkedin.com/in/torresaaron" title="LinkedIn">
-               <i class="fab fa-linkedin fa-lg"></i>
-               </a>
-             </li>
-      </ul>
-      
-      <p><em>Code. Engineering Management. Fun.</em></p>
-      
-    </header>
-
-    
-<nav>
-    <ul>
-        
-        <li>
-            <a class="" href="/tags">
-                <i class="fa-li fa  fa-lg"></i><span>Tags</span>
-            </a>
-        </li>
-        
-    </ul>
-</nav>
-
-
-    <main>
-
-
-
-
-<article>
-
-    <h1>Go Validation Tricks</h1>
-
-    
-      <aside>
-    <ul>
-        <li>
-            <time class="post-date" datetime="2015-06-25T00:00:00Z">Jun 25, 2015</time>
-        </li>
-        
-
-        
-        <li>
-            <em>
-                
-                    
-                    <a href="/tags/development">#development</a>
-                
-                    , 
-                    <a href="/tags/golang">#golang</a>
-                
-            </em>
-        </li>
-        
-
-        <li>4 minutes read</li>
-    </ul>
-</aside>
-
-    
-
-    
-
-
-    <p>As I&rsquo;ve gotten more familiar with Go web programming, I&rsquo;ve tried to solve the problem of form and payload validation a number of different ways. Coming from a Python background, I initially really liked the idea of using a validation method.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Form</span> <span style="color:#66d9ef">struct</span>{
-    <span style="color:#a6e22e">Field1</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;field1&#34;`</span>
-    <span style="color:#a6e22e">Field2</span> <span style="color:#66d9ef">int</span>    <span style="color:#e6db74">`json:&#34;field2&#34;`</span>
+<!doctype html><html lang=en><head><title>Aaron's Desk Chair Adventures</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="The HTML5 Herald"><meta name=author content="Aaron Torres"><meta property="og:title" content="Go Validation Tricks"><meta property="og:description" content="As I&rsquo;ve gotten more familiar with Go web programming, I&rsquo;ve tried to solve the problem of form and payload validation a number of different ways. Coming from a Python background, I initially really liked the idea of using a validation method."><meta property="og:type" content="article"><meta property="og:url" content="https://www.aaron-torres.com/post/validation-tricks/"><meta property="article:published_time" content="2015-06-25T00:00:00+00:00"><meta property="article:modified_time" content="2015-06-25T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Go Validation Tricks"><meta name=twitter:description content="As I&rsquo;ve gotten more familiar with Go web programming, I&rsquo;ve tried to solve the problem of form and payload validation a number of different ways. Coming from a Python background, I initially really liked the idea of using a validation method."><meta name=generator content="Hugo 0.70.0-DEV"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin=anonymous><link rel=stylesheet href=https://www.aaron-torres.com/fontawesome/css/all.min.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda"><link rel=stylesheet type=text/css href=/css/styles.css><link rel=stylesheet href=https://www.aaron-torres.com/css/tmp.css></head><body><div id=container><header><h1><a href=/>Aaron&rsquo;s Desk Chair Adventures</a></h1><ul id=social-media><li><a href=mailto:me@aaron-torres.com title="Email me"><i class="fas fa-envelope fa-lg"></i></a></li><li><a href=https://github.com/agtorre title=GitHub><i class="fab fa-github fa-lg"></i></a></li><li><a href=https://twitter.com/aarontorres title=Twitter><i class="fab fa-twitter fa-lg"></i></a></li><li><a href=https://linkedin.com/in/torresaaron title=LinkedIn><i class="fab fa-linkedin fa-lg"></i></a></li></ul><p><em>Code. Engineering Management. Fun.</em></p></header><nav><ul><li><a href=/post><i class="fa-li fa fa-lg"></i><span>Archive</span></a></li><li><a href=/tags><i class="fa-li fa fa-lg"></i><span>Tags</span></a></li></ul></nav><main><article><h1>Go Validation Tricks</h1><aside><ul><li><time class=post-date datetime=2015-06-25T00:00:00Z>Jun 25, 2015</time></li><li><em><a href=/tags/development>#development</a>
+,
+<a href=/tags/golang>#golang</a></em></li><li>4 minutes read</li></ul></aside><p>As I&rsquo;ve gotten more familiar with Go web programming, I&rsquo;ve tried to solve the problem of form and payload validation a number of different ways. Coming from a Python background, I initially really liked the idea of using a validation method.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Form</span> <span style=color:#66d9ef>struct</span>{
+    <span style=color:#a6e22e>Field1</span> <span style=color:#66d9ef>string</span> <span style=color:#e6db74>`json:&#34;field1&#34;`</span>
+    <span style=color:#a6e22e>Field2</span> <span style=color:#66d9ef>int</span>    <span style=color:#e6db74>`json:&#34;field2&#34;`</span>
 }
 
-<span style="color:#75715e">// we can pass in multiple arguments like db, or whatever else.
-</span><span style="color:#75715e">// do any validation necessary using the values in Form
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">f</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Form</span>) <span style="color:#a6e22e">Validate</span>(<span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Database</span>) <span style="color:#66d9ef">error</span>{
+<span style=color:#75715e>// we can pass in multiple arguments like db, or whatever else.
+</span><span style=color:#75715e>// do any validation necessary using the values in Form
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>f</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Form</span>) <span style=color:#a6e22e>Validate</span>(<span style=color:#a6e22e>db</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Database</span>) <span style=color:#66d9ef>error</span>{
 }
-</code></pre></div><p>There are a few problems with this approach. The first problem is that this validate method is likely to return an error immediately rather than aggregate them all. The second problem is that this validation method is incredibly painful to mock when testing.</p>
-<h3 id="first-problem">First Problem</h3>
-<p>Let&rsquo;s take a stab at the first problem. In Go, errors are actually an <a href="http://blog.golang.org/error-handling-and-go">interface</a>. One way to implement an error interface and return all errors at the same time might be this Verror approach that <a href="http://husobee.github.io">husobee</a> and I came up with:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">import</span> (
-    <span style="color:#e6db74">&#34;fmt&#34;</span>
-    <span style="color:#e6db74">&#34;strings&#34;</span>
+</code></pre></div><p>There are a few problems with this approach. The first problem is that this validate method is likely to return an error immediately rather than aggregate them all. The second problem is that this validation method is incredibly painful to mock when testing.</p><h3 id=first-problem>First Problem</h3><p>Let&rsquo;s take a stab at the first problem. In Go, errors are actually an <a href=http://blog.golang.org/error-handling-and-go>interface</a>. One way to implement an error interface and return all errors at the same time might be this Verror approach that <a href=http://husobee.github.io>husobee</a> and I came up with:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#f92672>import</span> (
+    <span style=color:#e6db74>&#34;fmt&#34;</span>
+    <span style=color:#e6db74>&#34;strings&#34;</span>
 )
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewVerror</span>() <span style="color:#f92672">*</span><span style="color:#a6e22e">Verrors</span> {
-    <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Verrors</span>{
-        <span style="color:#a6e22e">Errors</span>: make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>][]<span style="color:#66d9ef">string</span>),
+<span style=color:#66d9ef>func</span> <span style=color:#a6e22e>NewVerror</span>() <span style=color:#f92672>*</span><span style=color:#a6e22e>Verrors</span> {
+    <span style=color:#66d9ef>return</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>Verrors</span>{
+        <span style=color:#a6e22e>Errors</span>: make(<span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>][]<span style=color:#66d9ef>string</span>),
     }
 }
 
-<span style="color:#75715e">// keys represent the field
-</span><span style="color:#75715e">// and each field can have numerous errors
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Verrors</span> <span style="color:#66d9ef">struct</span> {
-    <span style="color:#a6e22e">Errors</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>][]<span style="color:#66d9ef">string</span>
+<span style=color:#75715e>// keys represent the field
+</span><span style=color:#75715e>// and each field can have numerous errors
+</span><span style=color:#75715e></span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Verrors</span> <span style=color:#66d9ef>struct</span> {
+    <span style=color:#a6e22e>Errors</span> <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>][]<span style=color:#66d9ef>string</span>
 }
 
-<span style="color:#75715e">// also works with duplicate errors!
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">e</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Verrors</span>) <span style="color:#a6e22e">AddError</span>(<span style="color:#a6e22e">field</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">string</span>) {
-    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">Errors</span>[<span style="color:#a6e22e">field</span>]; !<span style="color:#a6e22e">ok</span> {
-        <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">Errors</span>[<span style="color:#a6e22e">field</span>] = make([]<span style="color:#66d9ef">string</span>, <span style="color:#ae81ff">0</span>)
+<span style=color:#75715e>// also works with duplicate errors!
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>e</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Verrors</span>) <span style=color:#a6e22e>AddError</span>(<span style=color:#a6e22e>field</span>, <span style=color:#a6e22e>err</span> <span style=color:#66d9ef>string</span>) {
+    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>_</span>, <span style=color:#a6e22e>ok</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>Errors</span>[<span style=color:#a6e22e>field</span>]; !<span style=color:#a6e22e>ok</span> {
+        <span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>Errors</span>[<span style=color:#a6e22e>field</span>] = make([]<span style=color:#66d9ef>string</span>, <span style=color:#ae81ff>0</span>)
     }
 
-    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">ele</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">Errors</span>[<span style="color:#a6e22e">field</span>] {
-        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ele</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">err</span> {
-            <span style="color:#66d9ef">return</span>
+    <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>_</span>, <span style=color:#a6e22e>ele</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>Errors</span>[<span style=color:#a6e22e>field</span>] {
+        <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>ele</span> <span style=color:#f92672>==</span> <span style=color:#a6e22e>err</span> {
+            <span style=color:#66d9ef>return</span>
         }
     }
-    <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">Errors</span>[<span style="color:#a6e22e">field</span>] = append(<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">Errors</span>[<span style="color:#a6e22e">field</span>], <span style="color:#a6e22e">err</span>)
+    <span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>Errors</span>[<span style=color:#a6e22e>field</span>] = append(<span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>Errors</span>[<span style=color:#a6e22e>field</span>], <span style=color:#a6e22e>err</span>)
 }
 
-<span style="color:#75715e">// we can aggregate together functions that return verrors
-</span><span style="color:#75715e">// or multiple verrors from go routines, for example
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">e</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Verrors</span>) <span style="color:#a6e22e">Merge</span>(<span style="color:#a6e22e">e2</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Verrors</span>) {
-    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">key</span>, <span style="color:#a6e22e">values</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">e2</span>.<span style="color:#a6e22e">Errors</span> {
-        <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">value</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">values</span> {
-            <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">AddError</span>(<span style="color:#a6e22e">key</span>, <span style="color:#a6e22e">value</span>)
+<span style=color:#75715e>// we can aggregate together functions that return verrors
+</span><span style=color:#75715e>// or multiple verrors from go routines, for example
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>e</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Verrors</span>) <span style=color:#a6e22e>Merge</span>(<span style=color:#a6e22e>e2</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Verrors</span>) {
+    <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>key</span>, <span style=color:#a6e22e>values</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>e2</span>.<span style=color:#a6e22e>Errors</span> {
+        <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>_</span>, <span style=color:#a6e22e>value</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>values</span> {
+            <span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>AddError</span>(<span style=color:#a6e22e>key</span>, <span style=color:#a6e22e>value</span>)
         }
     }
 }
 
-<span style="color:#75715e">// if you want to return nil instead of an empty verror
-</span><span style="color:#75715e">// check if Valid return false first
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">e</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Verrors</span>) <span style="color:#a6e22e">Valid</span>() <span style="color:#66d9ef">bool</span>{
-    <span style="color:#66d9ef">return</span> len(<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">Errors</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>
+<span style=color:#75715e>// if you want to return nil instead of an empty verror
+</span><span style=color:#75715e>// check if Valid return false first
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>e</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Verrors</span>) <span style=color:#a6e22e>Valid</span>() <span style=color:#66d9ef>bool</span>{
+    <span style=color:#66d9ef>return</span> len(<span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>Errors</span>) <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>
 }
 
-<span style="color:#75715e">// satisfies the error interface
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">e</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Verrors</span>) <span style="color:#a6e22e">Error</span>() <span style="color:#66d9ef">string</span> {
-    <span style="color:#a6e22e">response</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;&#34;</span>
-    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">k</span>, <span style="color:#a6e22e">v</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">Errors</span> {
-        <span style="color:#a6e22e">response</span> <span style="color:#f92672">+=</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;%s: [%s]&#34;</span>, <span style="color:#a6e22e">k</span>, <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Join</span>(<span style="color:#a6e22e">v</span>, <span style="color:#e6db74">&#34;,&#34;</span>))
+<span style=color:#75715e>// satisfies the error interface
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>e</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Verrors</span>) <span style=color:#a6e22e>Error</span>() <span style=color:#66d9ef>string</span> {
+    <span style=color:#a6e22e>response</span> <span style=color:#f92672>:=</span> <span style=color:#e6db74>&#34;&#34;</span>
+    <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>k</span>, <span style=color:#a6e22e>v</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>Errors</span> {
+        <span style=color:#a6e22e>response</span> <span style=color:#f92672>+=</span> <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Sprintf</span>(<span style=color:#e6db74>&#34;%s: [%s]&#34;</span>, <span style=color:#a6e22e>k</span>, <span style=color:#a6e22e>strings</span>.<span style=color:#a6e22e>Join</span>(<span style=color:#a6e22e>v</span>, <span style=color:#e6db74>&#34;,&#34;</span>))
     }
-    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>
+    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>response</span>
 }
-</code></pre></div><p>Verrors are pretty flexible, you can even return them as JSON with some additional type checking. Keep in mind this doesn&rsquo;t work too well if you&rsquo;re returning XML.</p>
-<h3 id="second-problem">Second Problem</h3>
-<p>Mocking in tests is a very large topic, and could be a blog post all on its own. In Go, the only way to mock a method is with an interface. There&rsquo;s a more comprehensive example <a href="http://play.golang.org/p/cWLT0aSkF2">here</a>, but the gist of it is:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Form</span> <span style="color:#66d9ef">struct</span>{
-    <span style="color:#a6e22e">Field1</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;field1&#34;`</span>
-    <span style="color:#a6e22e">Field2</span> <span style="color:#66d9ef">int</span>    <span style="color:#e6db74">`json:&#34;field2&#34;`</span>
+</code></pre></div><p>Verrors are pretty flexible, you can even return them as JSON with some additional type checking. Keep in mind this doesn&rsquo;t work too well if you&rsquo;re returning XML.</p><h3 id=second-problem>Second Problem</h3><p>Mocking in tests is a very large topic, and could be a blog post all on its own. In Go, the only way to mock a method is with an interface. There&rsquo;s a more comprehensive example <a href=http://play.golang.org/p/cWLT0aSkF2>here</a>, but the gist of it is:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Form</span> <span style=color:#66d9ef>struct</span>{
+    <span style=color:#a6e22e>Field1</span> <span style=color:#66d9ef>string</span> <span style=color:#e6db74>`json:&#34;field1&#34;`</span>
+    <span style=color:#a6e22e>Field2</span> <span style=color:#66d9ef>int</span>    <span style=color:#e6db74>`json:&#34;field2&#34;`</span>
 }
 
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">f</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Form</span>) <span style="color:#a6e22e">Validate</span>(<span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Database</span>) <span style="color:#66d9ef">error</span>{
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>f</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Form</span>) <span style=color:#a6e22e>Validate</span>(<span style=color:#a6e22e>db</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Database</span>) <span style=color:#66d9ef>error</span>{
 }
 
-<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">FormValidater</span> <span style="color:#66d9ef">interface</span>{
-     <span style="color:#a6e22e">Validate</span>(<span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Database</span>) <span style="color:#66d9ef">error</span>
+<span style=color:#66d9ef>type</span> <span style=color:#a6e22e>FormValidater</span> <span style=color:#66d9ef>interface</span>{
+     <span style=color:#a6e22e>Validate</span>(<span style=color:#a6e22e>db</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Database</span>) <span style=color:#66d9ef>error</span>
 }
 
-<span style="color:#75715e">// we can pass in a mock here
-</span><span style="color:#75715e">// rarely this simple unfortunately
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">ShowMock</span>(<span style="color:#a6e22e">f</span> <span style="color:#a6e22e">FormValidater</span>){
-    <span style="color:#a6e22e">db</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">getDatabase</span>()
-    <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">Validate</span>(<span style="color:#a6e22e">db</span>)
+<span style=color:#75715e>// we can pass in a mock here
+</span><span style=color:#75715e>// rarely this simple unfortunately
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>ShowMock</span>(<span style=color:#a6e22e>f</span> <span style=color:#a6e22e>FormValidater</span>){
+    <span style=color:#a6e22e>db</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>getDatabase</span>()
+    <span style=color:#a6e22e>f</span>.<span style=color:#a6e22e>Validate</span>(<span style=color:#a6e22e>db</span>)
 }
-</code></pre></div><p>If you&rsquo;re unable to wrap your methods in an interface, for example when the method and its struct are both in the same scope, mocking these methods is pretty much impossible.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Handler</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>){
-    <span style="color:#a6e22e">db</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">getDatabase</span>()
-    <span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">getFromJSON</span>(<span style="color:#a6e22e">r</span>)
-    <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Validate</span>(<span style="color:#a6e22e">db</span>)
+</code></pre></div><p>If you&rsquo;re unable to wrap your methods in an interface, for example when the method and its struct are both in the same scope, mocking these methods is pretty much impossible.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>Handler</span>(<span style=color:#a6e22e>w</span> <span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>ResponseWriter</span>, <span style=color:#a6e22e>r</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>Request</span>){
+    <span style=color:#a6e22e>db</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>getDatabase</span>()
+    <span style=color:#a6e22e>c</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>getFromJSON</span>(<span style=color:#a6e22e>r</span>)
+    <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Validate</span>(<span style=color:#a6e22e>db</span>)
 }
-</code></pre></div><p>Another option is using a function that takes the form object as the first argument instead of a method. With functions you can use: <a href="http://play.golang.org/p/oLF1XnRX3C">patch/restore</a>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Form</span> <span style="color:#66d9ef">struct</span>{
-    <span style="color:#a6e22e">Field1</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;field1&#34;`</span>
-    <span style="color:#a6e22e">Field2</span> <span style="color:#66d9ef">int</span>    <span style="color:#e6db74">`json:&#34;field2&#34;`</span>
+</code></pre></div><p>Another option is using a function that takes the form object as the first argument instead of a method. With functions you can use: <a href=http://play.golang.org/p/oLF1XnRX3C>patch/restore</a>.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Form</span> <span style=color:#66d9ef>struct</span>{
+    <span style=color:#a6e22e>Field1</span> <span style=color:#66d9ef>string</span> <span style=color:#e6db74>`json:&#34;field1&#34;`</span>
+    <span style=color:#a6e22e>Field2</span> <span style=color:#66d9ef>int</span>    <span style=color:#e6db74>`json:&#34;field2&#34;`</span>
 }
 
-<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">ValidateForm</span> = <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">f</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Form</span>, <span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Database</span>) <span style="color:#66d9ef">error</span>{
+<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>ValidateForm</span> = <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>f</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Form</span>, <span style=color:#a6e22e>db</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Database</span>) <span style=color:#66d9ef>error</span>{
 }
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">ShowMock</span>(){
-    <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">Patch</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">ValidateForm</span>, <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">f</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Form</span>, <span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Database</span>) <span style="color:#66d9ef">error</span>{
-        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-    }).<span style="color:#a6e22e">Restore</span>()
+<span style=color:#66d9ef>func</span> <span style=color:#a6e22e>ShowMock</span>(){
+    <span style=color:#66d9ef>defer</span> <span style=color:#a6e22e>Patch</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ValidateForm</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>f</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Form</span>, <span style=color:#a6e22e>db</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Database</span>) <span style=color:#66d9ef>error</span>{
+        <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nil</span>
+    }).<span style=color:#a6e22e>Restore</span>()
 }
-</code></pre></div><p>This has the unfortunate side-effect of modifying the global ValidateForm definition and is not thread-safe. For tests this is typically not an issue, but if you want to avoid patch/restore, another strategy is to make use of struct closure variables:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Form</span> <span style="color:#66d9ef">struct</span> {
-    <span style="color:#a6e22e">Field1</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;field1&#34;`</span>
-    <span style="color:#a6e22e">Field2</span> <span style="color:#66d9ef">int</span>    <span style="color:#e6db74">`json:&#34;field2&#34;`</span>
-}
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">ValidateForm</span>(<span style="color:#a6e22e">f</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Form</span>, <span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Database</span>) <span style="color:#66d9ef">error</span> {
+</code></pre></div><p>This has the unfortunate side-effect of modifying the global ValidateForm definition and is not thread-safe. For tests this is typically not an issue, but if you want to avoid patch/restore, another strategy is to make use of struct closure variables:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Form</span> <span style=color:#66d9ef>struct</span> {
+    <span style=color:#a6e22e>Field1</span> <span style=color:#66d9ef>string</span> <span style=color:#e6db74>`json:&#34;field1&#34;`</span>
+    <span style=color:#a6e22e>Field2</span> <span style=color:#66d9ef>int</span>    <span style=color:#e6db74>`json:&#34;field2&#34;`</span>
 }
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewFormProcessor</span>() <span style="color:#f92672">*</span><span style="color:#a6e22e">FormProcessor</span> {
-    <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">FormProcessor</span>{
-        <span style="color:#a6e22e">ValidateForm</span>: <span style="color:#a6e22e">ValidateForm</span>,
+<span style=color:#66d9ef>func</span> <span style=color:#a6e22e>ValidateForm</span>(<span style=color:#a6e22e>f</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Form</span>, <span style=color:#a6e22e>db</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Database</span>) <span style=color:#66d9ef>error</span> {
+}
+
+<span style=color:#66d9ef>func</span> <span style=color:#a6e22e>NewFormProcessor</span>() <span style=color:#f92672>*</span><span style=color:#a6e22e>FormProcessor</span> {
+    <span style=color:#66d9ef>return</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>FormProcessor</span>{
+        <span style=color:#a6e22e>ValidateForm</span>: <span style=color:#a6e22e>ValidateForm</span>,
     }
 }
 
-<span style="color:#75715e">// ValidateForm is a closure
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">FormProcessor</span> <span style="color:#66d9ef">struct</span> {
-    <span style="color:#a6e22e">ValidateForm</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">f</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Form</span>, <span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Database</span>) <span style="color:#66d9ef">error</span>
+<span style=color:#75715e>// ValidateForm is a closure
+</span><span style=color:#75715e></span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>FormProcessor</span> <span style=color:#66d9ef>struct</span> {
+    <span style=color:#a6e22e>ValidateForm</span> <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>f</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Form</span>, <span style=color:#a6e22e>db</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Database</span>) <span style=color:#66d9ef>error</span>
 }
 
-<span style="color:#75715e">// an example of mocking ValidateForm that is
-</span><span style="color:#75715e">// thread-safe
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">f</span> <span style="color:#a6e22e">FormProcessor</span>) <span style="color:#a6e22e">ShowMock</span>() {
-    <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">ValidateForm</span> = <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">f</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Form</span>, <span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Database</span>) <span style="color:#66d9ef">error</span> {
-        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+<span style=color:#75715e>// an example of mocking ValidateForm that is
+</span><span style=color:#75715e>// thread-safe
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>f</span> <span style=color:#a6e22e>FormProcessor</span>) <span style=color:#a6e22e>ShowMock</span>() {
+    <span style=color:#a6e22e>f</span>.<span style=color:#a6e22e>ValidateForm</span> = <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>f</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Form</span>, <span style=color:#a6e22e>db</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Database</span>) <span style=color:#66d9ef>error</span> {
+        <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nil</span>
     }
 }
-</code></pre></div><p>The controllers discussed <a href="/post/handlers-and-state/">here</a> can make great use of an embedded FormProcessor (which can hold any number of validation functions). An example can be found <a href="http://play.golang.org/p/dkGVfVG86u">here</a>.</p>
-<h3 id="conclusion">Conclusion</h3>
-<p>I&rsquo;ve touched on a few strategies for tackling the validation problem, and I also highly encourage you to check out this <a href="https://github.com/asaskevich/govalidator">validation library</a> to supplement this information. I&rsquo;ll probably discuss this more in the future as I inevitably revisit this myself again.</p>
-
-
-</article>
-
-
-<section class="post-nav">
-    <ul>
-        
-        <li>
-            <a href="https://www.aaron-torres.com/post/handlers-and-state/"><i class="fa fa-chevron-circle-left"></i> Go Handlers and State</a>
-        </li>
-        
-        
-        <li>
-            <a href="https://www.aaron-torres.com/post/api-versioning-gorilla-mux/">Go API Versioning with Gorilla Mux <i class="fa fa-chevron-circle-right"></i> </a>
-        </li>
-        
-    </ul>
-</section>
-    
-    
-
-
-
-
-
-</main>
-    <footer>
-        <h6>Copyright © 2020 - Aaron Torres |
-            Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
-            <a href="https://www.aaron-torres.comindex.xml">Subscribe </a></h6>
-    </footer>
-</div>
-<script src="/js/scripts.js"></script>
-
-  
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-8973677-3', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-</body>
-
-</html>
-
+</code></pre></div><p>The controllers discussed <a href=/post/handlers-and-state/>here</a> can make great use of an embedded FormProcessor (which can hold any number of validation functions). An example can be found <a href=http://play.golang.org/p/dkGVfVG86u>here</a>.</p><h3 id=conclusion>Conclusion</h3><p>I&rsquo;ve touched on a few strategies for tackling the validation problem, and I also highly encourage you to check out this <a href=https://github.com/asaskevich/govalidator>validation library</a> to supplement this information. I&rsquo;ll probably discuss this more in the future as I inevitably revisit this myself again.</p></article><section class=post-nav><ul><li><a href=https://www.aaron-torres.com/post/handlers-and-state/><i class="fa fa-chevron-circle-left"></i>Go Handlers and State</a></li><li><a href=https://www.aaron-torres.com/post/api-versioning-gorilla-mux/>Go API Versioning with Gorilla Mux <i class="fa fa-chevron-circle-right"></i></a></li></ul></section></main><footer><h6>Copyright © 2020 - Aaron Torres |
+Rendered by <a href=https://gohugo.io title=Hugo>Hugo</a> |
+<a href=https://www.aaron-torres.comindex.xml>Subscribe</a></h6></footer></div><script src=/js/scripts.js></script><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-8973677-3','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>
