@@ -13,7 +13,7 @@
   </url>
   
   <url>
-    <loc>https://www.aaron-torres.com/posts/api-versioning-gorilla-mux/</loc>
+    <loc>https://www.aaron-torres.com/post/api-versioning-gorilla-mux/</loc>
     <lastmod>2016-05-17T00:00:00+00:00</lastmod>
   </url>
   
@@ -23,7 +23,7 @@
   </url>
   
   <url>
-    <loc>https://www.aaron-torres.com/posts/</loc>
+    <loc>https://www.aaron-torres.com/post/</loc>
     <lastmod>2016-05-17T00:00:00+00:00</lastmod>
   </url>
   
@@ -38,23 +38,27 @@
   </url>
   
   <url>
-    <loc>https://www.aaron-torres.com/posts/validation-tricks/</loc>
+    <loc>https://www.aaron-torres.com/post/validation-tricks/</loc>
     <lastmod>2015-06-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://www.aaron-torres.com/posts/handlers-and-state/</loc>
+    <loc>https://www.aaron-torres.com/post/handlers-and-state/</loc>
     <lastmod>2015-06-14T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://www.aaron-torres.com/posts/moving-forward/</loc>
+    <loc>https://www.aaron-torres.com/post/moving-forward/</loc>
     <lastmod>2014-01-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://www.aaron-torres.com/tags/profiling/</loc>
     <lastmod>2014-01-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://www.aaron-torres.com/categories/</loc>
   </url>
   
 </urlset>

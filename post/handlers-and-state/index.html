@@ -1,257 +1,236 @@
-  <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<!doctype html>
+
+<html lang="en">
+
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-    <title> Go Handlers and State &middot; Aaron Torres </title>
-    
-    <link rel="stylesheet" type="text/css" href="https://www.aaron-torres.com/css/uno.min.css" />
-    <link rel="stylesheet" type="text/css" href="https://www.aaron-torres.com/css/lightGallery.css" />
-    <style>
-        a{
-            color: #b58900;
-        }
+  <title>Aaron&#39;s Desk Chair Adventures</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="The HTML5 Herald" />
+<meta name="author" content="Aaron Torres" /><meta property="og:title" content="Go Handlers and State" />
+<meta property="og:description" content="Today I&rsquo;d like to get a bit technical about things I&rsquo;ve been learning and working on in the Go language
+Sometimes it&rsquo;s helpful to pass additional state into a web handler function." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.aaron-torres.com/post/handlers-and-state/" />
+<meta property="article:published_time" content="2015-06-14T00:00:00+00:00" />
+<meta property="article:modified_time" content="2015-06-14T00:00:00+00:00" />
 
-    </style>
-    
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
-    <link rel="shortcut icon" href="/favicon.ico">
-    
-    <link href="" rel="alternate" type="application/rss+xml" title="Aaron Torres" />
-    
-    <script src="https://www.aaron-torres.com/js/jquery.min.js"></script>
-    <script src="https://www.aaron-torres.com/js/main.min.js"></script>
-    
-    <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
-    <script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-</head>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go Handlers and State"/>
+<meta name="twitter:description" content="Today I&rsquo;d like to get a bit technical about things I&rsquo;ve been learning and working on in the Go language
+Sometimes it&rsquo;s helpful to pass additional state into a web handler function."/>
 
-  <body>
-    <div id="scriptHeader">
-    <span class="mobile btn-mobile-menu">
-            <i class="fa fa-bars btn-mobile-menu__icon"></i>
-            <i class="fa fa-times btn-mobile-close__icon hidden"> </i>
-    </span>
-    <header class="
-        
-            panel-cover panel-cover--collapsed
-        "  style="background-image: url(/images/background-cover.jpg)" >
-    <div class="panel-main">
-        <div class="panel-main__inner panel-inverted">
-            <div class="panel-main__content"> 
-                <h1 class="panel-cover__title panel-title">
-                    <a href="https://www.aaron-torres.com/"  title="link to homepage for Aaron Torres">Aaron Torres</a>
-                </h1>
-                <hr class="panel-cover__divider" />
-                <p class="panel-cover__description">  A collection of writing, projects, and whatever else I feel like.  </p>
-                <hr class="panel-cover__divider panel-cover__divider--secondary" />
-                <div class="navigation-wrapper">
-                    <nav class="cover-navigation cover-navigation--primary">
-                        <ul class="navigation">
-                            <li class="navigation__item"><a href="https://www.aaron-torres.com#blog" title="link to Aaron Torres blog" class="blog-button">Blog</a> </li></br>
-                            
-                            
-                       </ul>
-                    </nav> <nav class="cover-navigation navigation--social">
-    <ul class="navigation"> 
-        
-        <li class="navigation__item">
-            <a href="http://twitter.com/aarontorres" title="@aarontorres on Twitter"> <i class='fa fa-twitter'></i> <span class="label">Twitter</span> </a>
-        </li>   
-        
-        <li class="navigation__item">
-            <a href="https://github.com/agtorre" title="agtorre on github"> <i class='fa fa-github'></i> <span class="label">Github</span> </a>
-        </li>  </br>  
-        
-        <li class="navigation__item">
-            <a href="https://www.linkedin.com/in/torresaaron" title="Linkedin"> <i class='fa fa-linkedin'></i> <span class="label">Linkedin</span> </a>
-        </li>  
-        
-        <li class="navigation__item">
-            <a href="mailto:me@aaron-torres.com" title="Email me@aaron-torres.com"> <i class='fa fa-envelope-o'></i> <span class="label">Email</span> </a>
-        </li>  </ul>
-</nav>
- </div>
-            </div>
-        </div>
-        <div class="panel-cover--overlay"></div>
-    </div>
-</header>
-</div>
-<noscript>
-    <style>
-        #scriptHeader {display:none;}
-        .navigation-wrapper{
-            display: block;
-            top: 0;
-        }
-    </style>
+<meta name="generator" content="Hugo 0.70.0-DEV" />
+    
 
-    <header class="panel-cover panel-cover--collapsed" style="background-image: url(/images/background-cover.jpg)">
-        <div class="panel-main">
-            <div class="panel-main__inner panel-inverted">
-                <div class="panel-main__content"> 
-                    <h1 class="panel-cover__title panel-title">
-                        <a href="https://www.aaron-torres.com/"  title="link to homepage for Aaron Torres">Aaron Torres</a>
-                    </h1>
-                    <hr class="panel-cover__divider" />
-                    <p class="panel-cover__description">  A collection of writing, projects, and whatever else I feel like.  </p>
-                    <hr class="panel-cover__divider panel-cover__divider--secondary" />
-                    <div class="navigation-wrapper">
-                        <nav class="cover-navigation cover-navigation--primary">
-                            <ul class="navigation">
-                                <li class="navigation__item"><a href="https://www.aaron-torres.com/#blog" title="link to Aaron Torres blog" class="blog-button">Blog</a> </li></br>
-                                
-                                
-                           </ul>
-                        </nav> <nav class="cover-navigation navigation--social">
-    <ul class="navigation"> 
-        
-        <li class="navigation__item">
-            <a href="http://twitter.com/aarontorres" title="@aarontorres on Twitter"> <i class='fa fa-twitter'></i> <span class="label">Twitter</span> </a>
-        </li>   
-        
-        <li class="navigation__item">
-            <a href="https://github.com/agtorre" title="agtorre on github"> <i class='fa fa-github'></i> <span class="label">Github</span> </a>
-        </li>  </br>  
-        
-        <li class="navigation__item">
-            <a href="https://www.linkedin.com/in/torresaaron" title="Linkedin"> <i class='fa fa-linkedin'></i> <span class="label">Linkedin</span> </a>
-        </li>  
-        
-        <li class="navigation__item">
-            <a href="mailto:me@aaron-torres.com" title="Email me@aaron-torres.com"> <i class='fa fa-envelope-o'></i> <span class="label">Email</span> </a>
-        </li>  </ul>
-</nav>
- </div>
-                </div>
-            </div>
-            <div class="panel-cover--overlay"></div>
-        </div>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://www.aaron-torres.com/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="/">Aaron&rsquo;s Desk Chair Adventures</a>
+            </h1>
+
+      <ul id="social-media">
+             <li>
+               <a href="mailto:me@aaron-torres.com" title="Email me">
+               <i class="fas fa-envelope fa-lg"></i>
+               </a>
+             </li>
+             <li>
+               <a href="https://github.com/agtorre" title="GitHub">
+               <i class="fab fa-github fa-lg"></i>
+               </a>
+             </li>
+             <li>
+               <a href="https://twitter.com/aarontorres" title="Twitter">
+               <i class="fab fa-twitter fa-lg"></i>
+               </a>
+             </li>
+             <li>
+               <a href="https://linkedin.com/in/torresaaron" title="LinkedIn">
+               <i class="fab fa-linkedin fa-lg"></i>
+               </a>
+             </li>
+      </ul>
+      
+      <p><em>Code. Engineering Management. Fun.</em></p>
+      
     </header>
-</noscript>
 
-    <div class="content-wrapper">
-      <div class="content-wrapper__inner">
-        <div class="post">
-          <h1>Go Handlers and State</h1>
-          <span class="post-date">Sun, Jun 14, 2015</span>
-          <p>Today I&rsquo;d like to get a bit technical about things I&rsquo;ve been learning and working on in the Go language</p>
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="/tags">
+                <i class="fa-li fa  fa-lg"></i><span>Tags</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
 
-<p>Sometimes it&rsquo;s helpful to pass additional state into a <a href="http://golang.org/pkg/net/http/#HandlerFunc">web handler function</a>. For all the examples below, lets assume you want to have a toggle for authentication that is checked once within the handler function. These functions have a specific signature and make it difficult to both add parameters and remain compatible with other libraries. There are many ways to accomplish this, including middleware with some combination of <a href="https://github.com/codegangsta/negroni">middleware</a> and <a href="http://www.gorillatoolkit.org/pkg/context">context</a> libraries. This has the advantage of allowing each request to modify the stored context value without interfering with other handlers. It&rsquo;s a bit complicated if you happen to forget to turn on the middleware and requires a diligent programmer to not hit panics inside the handler by implementing functions like DoAuth below.</p>
 
-<pre><code class="language-go">type key int
+    <main>
 
-const AuthKey key = 0
 
-func UseAuth(w http.ResponseWriter, r *http.Request, next http.HandlerFunc){
-    context.Set(r, AuthKey, true)
-    next(w, r)
-    context.Clear(r)
-}
 
-func DoAuth(r *http.Request)(bool, error){
-    // in case middle-ware isn't turned on...
-    if doAuth, ok := context.Get(r, AuthKey); ok{
-        return doAuth, nil
-    }
-    return false, errors.New(&quot;middleware off&quot;)
-}
 
-func AllTheInfo(w http.ResponseWriter, r *http.Request){
-    if doAuth, err := DoAuth(r); err == nil &amp;&amp; doAuth{
-        // do something here
-    }
-}
+<article>
 
-func main(){
-    n := negroni.New()
-    n.Use(UseAuth)
+    <h1>Go Handlers and State</h1>
 
-    mux = http.NewServeMux()
-    mux.HandleFunc(&quot;/&quot;, AllTheInfo)
-
-    n.UseHandler(mux)
-    n.Run(&quot;:8000&quot;)
-}
-</code></pre>
-
-<p>A simpler, but potentially less flexible approach is to use controllers. It&rsquo;s important to remember and keep in mind that controller variables should not be modified inside the handler as it will modify the controller for all other handlers that make use of it. For example, it may seem tempting to set some state based on the current request, but this is not recommended out of the box. Some examples of packages that get around this limitation by creating a controller each request include <a href="https://github.com/gocraft/web">gocraft/web</a> and this <a href="https://github.com/codegangsta/controller">controller</a> library.</p>
-
-<pre><code class="language-go">type Controller struct{
-    DoAuth bool
-}
-
-func (c *Controller) AllTheInfo(w http.ResponseWriter, r *http.Request){
-    if c.DoAuth{
-        // do something here
-    }
-}
-
-func main(){
-    c := &amp;Controller{DoAuth: true}
-    http.HandleFunc(&quot;/&quot;, c.AllTheInfo)
-    http.ListenAndServe(&quot;:8000&quot;, nil)
-}
-</code></pre>
-
-<p>Finally, a very light-weight approach I like to make use of is closures. Closures allow the state to be modified from within the handler and are also granular enough that you can tweak them for every route without initializing additional controllers or wrapping every route with middleware incurring context look-up and reflection overhead.</p>
-
-<pre><code class="language-go">func CheckAllTheInfo(DoAuth bool) func(w ResponseWriter, r *Request){
-    return func(w ResponseWriter, r *Request){
-        if DoAuth{
-            // do something here
-        }
-    }
-}
-
-func main(){
-    http.HandleFunc(&quot;/&quot;, CheckAllTheInfo(true))
-    http.ListenAndServe(&quot;:8000&quot;, nil)
-}
-</code></pre>
-
-<p>Overall, there&rsquo;s a lot of ways to accomplish injecting state for web handler functions in Go. There are a number of other middleware packages besides negroni and there are even context objects build into the <a href="https://godoc.org/golang.org/x/net/context">standard library</a> now. I use combinations of all of these as one doesn&rsquo;t scratch all the itches I have. You can also combine these, for example you could attach a context object to a controller that is safe to modify or wrap a controller method in a closure.</p>
-
-        </div>
-        <div class="sharing">
-<a href="https://twitter.com/intent/tweet?status=Go%20Handlers%20and%20State-https%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f" target="_blank" title="Follow me on Twitter" class="twitter">
-<span class="fa fa-twitter-square fa-3x"></span></a>
-<a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f" target="_blank" title="Join me on Facebook" class="facebook">
-<span class="fa fa-facebook-square fa-3x"></span></a>
-<a href="https://plus.google.com/share?url=https%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f" target="_blank" title="Google+" class="googleplus">
-<span class="fa fa-google-plus-square fa-3x"></span></a>
-<a href="http://www.linkedin.com/shareArticle?mini=true&url=https%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f&title=Go%20Handlers%20and%20State" target="_blank" title="LinkedIn" class="linkedin">
-<span class="fa fa-linkedin-square fa-3x"></span></a>
-<a href="http://www.reddit.com/submit?url=https%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f" target="_blank" title="Reddit" class="reddit"><span class="fa fa-reddit-square fa-3x"></span></a>
-<a href="http://www.stumbleupon.com/submit?url=https%3a%2f%2fwww.aaron-torres.com%2fpost%2fhandlers-and-state%2f" target="_blank" title="StumbleUpon" class="stumbleupon"><span class="fa fa-stumbleupon fa-3x">
-</span></a>
-</div>
+    
+      <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2015-06-14T00:00:00Z">Jun 14, 2015</time>
+        </li>
         
 
+        
+        <li>
+            <em>
+                
+                    
+                    <a href="/tags/development">#development</a>
+                
+                    , 
+                    <a href="/tags/golang">#golang</a>
+                
+            </em>
+        </li>
+        
+
+        <li>3 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    
 
 
-      </div>
-    </div>
+    <p>Today I&rsquo;d like to get a bit technical about things I&rsquo;ve been learning and working on in the Go language</p>
+<p>Sometimes it&rsquo;s helpful to pass additional state into a <a href="http://golang.org/pkg/net/http/#HandlerFunc">web handler function</a>. For all the examples below, lets assume you want to have a toggle for authentication that is checked once within the handler function. These functions have a specific signature and make it difficult to both add parameters and remain compatible with other libraries. There are many ways to accomplish this, including middleware with some combination of <a href="https://github.com/codegangsta/negroni">middleware</a> and <a href="http://www.gorillatoolkit.org/pkg/context">context</a> libraries. This has the advantage of allowing each request to modify the stored context value without interfering with other handlers. It&rsquo;s a bit complicated if you happen to forget to turn on the middleware and requires a diligent programmer to not hit panics inside the handler by implementing functions like DoAuth below.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">key</span> <span style="color:#66d9ef">int</span>
 
-  </body>
-  <script type="text/javascript">
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">AuthKey</span> <span style="color:#a6e22e">key</span> = <span style="color:#ae81ff">0</span>
 
-  ga('create', 'UA-8973677-3', 'aaron-torres.com');
-  ga('send', 'pageview');
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">UseAuth</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>, <span style="color:#a6e22e">next</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span>){
+    <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Set</span>(<span style="color:#a6e22e">r</span>, <span style="color:#a6e22e">AuthKey</span>, <span style="color:#66d9ef">true</span>)
+    <span style="color:#a6e22e">next</span>(<span style="color:#a6e22e">w</span>, <span style="color:#a6e22e">r</span>)
+    <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Clear</span>(<span style="color:#a6e22e">r</span>)
+}
 
-(function(){var j=function(a,b){return window.getComputedStyle?getComputedStyle(a).getPropertyValue(b):a.currentStyle[b]};var k=function(a,b,c){if(a.addEventListener)a.addEventListener(b,c,false);else a.attachEvent('on'+b,c)};var l=function(a,b){for(key in b)if(b.hasOwnProperty(key))a[key]=b[key];return a};window.fitText=function(d,e,f){var g=l({'minFontSize':-1/0,'maxFontSize':1/0},f);var h=function(a){var b=e||1;var c=function(){a.style.fontSize=Math.max(Math.min(a.clientWidth/(b*10),parseFloat(g.maxFontSize)),parseFloat(g.minFontSize))+'px'};c();k(window,'resize',c)};if(d.length)for(var i=0;i<d.length;i++)h(d[i]);else h(d);return d}})();
-fitText(document.getElementById('title'), 1)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">DoAuth</span>(<span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>)(<span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>){
+    <span style="color:#75715e">// in case middle-ware isn&#39;t turned on...
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">doAuth</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">r</span>, <span style="color:#a6e22e">AuthKey</span>); <span style="color:#a6e22e">ok</span>{
+        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">doAuth</span>, <span style="color:#66d9ef">nil</span>
+    }
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;middleware off&#34;</span>)
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">AllTheInfo</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>){
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">doAuth</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">DoAuth</span>(<span style="color:#a6e22e">r</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">doAuth</span>{
+        <span style="color:#75715e">// do something here
+</span><span style="color:#75715e"></span>    }
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>(){
+    <span style="color:#a6e22e">n</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">negroni</span>.<span style="color:#a6e22e">New</span>()
+    <span style="color:#a6e22e">n</span>.<span style="color:#a6e22e">Use</span>(<span style="color:#a6e22e">UseAuth</span>)
+
+    <span style="color:#a6e22e">mux</span> = <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewServeMux</span>()
+    <span style="color:#a6e22e">mux</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/&#34;</span>, <span style="color:#a6e22e">AllTheInfo</span>)
+
+    <span style="color:#a6e22e">n</span>.<span style="color:#a6e22e">UseHandler</span>(<span style="color:#a6e22e">mux</span>)
+    <span style="color:#a6e22e">n</span>.<span style="color:#a6e22e">Run</span>(<span style="color:#e6db74">&#34;:8000&#34;</span>)
+}
+</code></pre></div><p>A simpler, but potentially less flexible approach is to use controllers. It&rsquo;s important to remember and keep in mind that controller variables should not be modified inside the handler as it will modify the controller for all other handlers that make use of it. For example, it may seem tempting to set some state based on the current request, but this is not recommended out of the box. Some examples of packages that get around this limitation by creating a controller each request include <a href="https://github.com/gocraft/web">gocraft/web</a> and this <a href="https://github.com/codegangsta/controller">controller</a> library.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Controller</span> <span style="color:#66d9ef">struct</span>{
+    <span style="color:#a6e22e">DoAuth</span> <span style="color:#66d9ef">bool</span>
+}
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Controller</span>) <span style="color:#a6e22e">AllTheInfo</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>){
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">DoAuth</span>{
+        <span style="color:#75715e">// do something here
+</span><span style="color:#75715e"></span>    }
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>(){
+    <span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Controller</span>{<span style="color:#a6e22e">DoAuth</span>: <span style="color:#66d9ef">true</span>}
+    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/&#34;</span>, <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">AllTheInfo</span>)
+    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ListenAndServe</span>(<span style="color:#e6db74">&#34;:8000&#34;</span>, <span style="color:#66d9ef">nil</span>)
+}
+</code></pre></div><p>Finally, a very light-weight approach I like to make use of is closures. Closures allow the state to be modified from within the handler and are also granular enough that you can tweak them for every route without initializing additional controllers or wrapping every route with middleware incurring context look-up and reflection overhead.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">CheckAllTheInfo</span>(<span style="color:#a6e22e">DoAuth</span> <span style="color:#66d9ef">bool</span>) <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Request</span>){
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Request</span>){
+        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">DoAuth</span>{
+            <span style="color:#75715e">// do something here
+</span><span style="color:#75715e"></span>        }
+    }
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>(){
+    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/&#34;</span>, <span style="color:#a6e22e">CheckAllTheInfo</span>(<span style="color:#66d9ef">true</span>))
+    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ListenAndServe</span>(<span style="color:#e6db74">&#34;:8000&#34;</span>, <span style="color:#66d9ef">nil</span>)
+}
+</code></pre></div><p>Overall, there&rsquo;s a lot of ways to accomplish injecting state for web handler functions in Go. There are a number of other middleware packages besides negroni and there are even context objects build into the <a href="https://godoc.org/golang.org/x/net/context">standard library</a> now. I use combinations of all of these as one doesn&rsquo;t scratch all the itches I have. You can also combine these, for example you could attach a context object to a controller that is safe to modify or wrap a controller method in a closure.</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://www.aaron-torres.com/post/moving-forward/"><i class="fa fa-chevron-circle-left"></i> Looking and Moving Forward</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://www.aaron-torres.com/post/validation-tricks/">Go Validation Tricks <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+    
+
+
+
+
+
+</main>
+    <footer>
+        <h6>Copyright © 2020 - Aaron Torres |
+            Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+            <a href="https://www.aaron-torres.comindex.xml">Subscribe </a></h6>
+    </footer>
+</div>
+<script src="/js/scripts.js"></script>
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-8973677-3', 'auto');
+	
+	ga('send', 'pageview');
+}
 </script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
 
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/styles/monokai.min.css">
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
+
+</body>
 
 </html>
+
